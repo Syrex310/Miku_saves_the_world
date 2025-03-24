@@ -6,6 +6,8 @@
 #include <cmath>
 #include <algorithm>
 
+using namespace std;
+
 const int SCREEN_WIDTH = 1600;
 const int SCREEN_HEIGHT = 900;
 enum GameState { MENU, GAME, UPGRADES };
@@ -49,5 +51,5 @@ struct Bullet {
 };
 
 bool checkCollision(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
-void updateCollisions(Player& player, std::vector<Enemy>& enemies, std::vector<Bullet>& bullets);
+void updateCollisions(Player& player, vector<Enemy>& enemies, vector<Bullet>& bullets);
 void renderText(SDL_Renderer* renderer, TTF_Font* font, const char* text, int x, int y);

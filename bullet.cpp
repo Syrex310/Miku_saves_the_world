@@ -1,6 +1,6 @@
 #include "common.hpp"
-
-std::vector<Bullet> bullets;
+using namespace std;
+vector<Bullet> bullets;
 
 void Bullet::move() {
     x += speedX;

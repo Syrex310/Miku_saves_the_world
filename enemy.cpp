@@ -1,6 +1,6 @@
 #include "common.hpp"
-
-std::vector<Enemy> enemies;
+using namespace std;
+vector<Enemy> enemies;
 
 void Enemy::moveTowardPlayer(Player& player) {
     int dx = player.x - x;
