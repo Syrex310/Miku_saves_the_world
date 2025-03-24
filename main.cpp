@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <algorithm> 
 
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
@@ -33,8 +34,36 @@ struct Enemy {
     }
     
 };
-
 vector<Enemy> enemies;
+
+struct Bullet {
+    int x, y;
+    int speed = 10;
+    int speedX, speedY;
+
+    Bullet(int startX, int startY, int targetX, int targetY) {
+        x = startX;
+        y = startY;
+
+        int dx = targetX - startX;
+        int dy = targetY - startY;
+        float length = sqrt(dx * dx + dy * dy);
+        if (length != 0) {
+            speedX = round(dx / length);
+            speedY = round(dy / length);
+        } else {
+            speedX = 0;
+            speedY = 0;
+        }
+    }
+
+    void move() {
+        x += speedX * speed;
+        y += speedY * speed;
+    }
+};
+vector<Bullet> bullets;
+
 
 bool init(SDL_Window*& window, SDL_Renderer*& renderer) {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
@@ -57,13 +86,19 @@ bool init(SDL_Window*& window, SDL_Renderer*& renderer) {
     return true;
 }
 
-void handleInput(SDL_Event& event, bool& running) {
+void handleInput(SDL_Event& event, Player& player, bool& running) {
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
             running = false;
         }
+        if (event.type == SDL_MOUSEBUTTONDOWN) {
+            int mouseX, mouseY;
+            SDL_GetMouseState(&mouseX, &mouseY);
+            bullets.push_back(Bullet(player.x + player.width / 2, player.y, mouseX, mouseY));
+        }
     }
 }
+
 
 void updatePlayerMovement(Player& player) {
     const Uint8* keystate = SDL_GetKeyboardState(NULL);
@@ -98,15 +133,58 @@ void renderEnemies(SDL_Renderer* renderer) {
     }
 }
 
+void renderBullets(SDL_Renderer* renderer) {
+    SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255); 
+    for (auto& bullet : bullets) {
+        SDL_Rect rect = { bullet.x, bullet.y, 5, 5 }; 
+        SDL_RenderFillRect(renderer, &rect);
+    }
+}
+void updateBullets(vector<Bullet>& bullets) {
+    for (auto& bullet : bullets) {
+        bullet.x += bullet.speedX;
+        bullet.y += bullet.speedY;
+    }
+}
+void shootBullet(vector<Bullet>& bullets, Player& player) {
+    int mouseX, mouseY;
+    SDL_GetMouseState(&mouseX, &mouseY);  
+
+    
+    float dx = mouseX - player.x;
+    float dy = mouseY - player.y;
+    float length = sqrt(dx * dx + dy * dy);  
+
+    if (length == 0) return;
+
+    
+    dx /= length;
+    dy /= length;
+
+    Bullet bullet(player.x + player.width / 2, player.y + player.height / 2, mouseX, mouseY);
+    bullet.x = player.x + player.width / 2; 
+    bullet.y = player.y + player.height / 2;
+    bullet.speedX = dx * 10;
+    bullet.speedY = dy * 10;
+
+    bullets.push_back(bullet);
+}
+
+
+
 void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
     bool running = true;
     SDL_Event event;
 
-    Player player = { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 50, 50, 5 };
+    Player player = { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 50, 50, 3 };
 
     for (int i = 0; i < 5; i ++){
         spawnEnemy();
     }
+
+    for (auto& bullet : bullets) {
+        bullet.move();
+    }    
 
     const int FPS = 60;
     const int frameDelay = 1000 / FPS; 
@@ -120,7 +198,7 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
     while (running) {
         frameStart = SDL_GetTicks();
 
-        handleInput(event, running);
+        handleInput(event, player, running);
         updatePlayerMovement(player);
         
         if (SDL_GetTicks() - lastSpawnTime > spawnInterval) {
@@ -132,12 +210,18 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
             enemy.moveTowardPlayer(player);
         }
         
+        bullets.erase(remove_if(bullets.begin(), bullets.end(), [](Bullet& bullet) {
+            return bullet.x < 0 || bullet.x > SCREEN_WIDTH || bullet.y < 0 || bullet.y > SCREEN_HEIGHT;
+        }), bullets.end());        
 
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); 
         SDL_RenderClear(renderer);
-
+        
+        updateBullets(bullets);
         renderPlayer(renderer, player);
         renderEnemies(renderer);
+        renderBullets(renderer);
+        
 
         SDL_RenderPresent(renderer);
 
