@@ -37,21 +37,10 @@ void handleInput(SDL_Event& event, bool& running) {
 }
 void updateShooting(Player& player) {
     Uint32 currentTime = SDL_GetTicks();
-    if (isShooting && currentTime > lastShotTime + 100){
+    if (isShooting && currentTime > lastShotTime + 250){
         int mouseX, mouseY;
         SDL_GetMouseState(&mouseX, &mouseY);
-
-        float dx = mouseX - (player.x + player.width / 2);
-        float dy = mouseY - (player.y + player.height / 2);
-        float length = sqrt(dx * dx + dy * dy);
-
-        if (length < 1) length = 1;
-
-        float speedX = (dx / length) * 10;
-        float speedY = (dy / length) * 10;
-
-        bullets.push_back(Bullet(player.x + player.width / 2, player.y + player.height / 2, speedX, speedY));
-
+        bullets.push_back(Bullet(player.x + player.width / 2, player.y + player.height / 2, mouseX, mouseY));
         lastShotTime = currentTime;
     }
 }
