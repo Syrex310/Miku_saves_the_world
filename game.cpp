@@ -45,19 +45,12 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
 
     TTF_Font* font = TTF_OpenFont("OpenSans-Italic-VariableFont_wdth,wght.ttf", 24);
 
-
     Player player = { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 50, 50, 3 };
-    
-    for (auto& bullet : bullets) {
-        bullet.move();
-    }    
-
     const int FPS = 60;
     const int frameDelay = 1000 / FPS; 
 
     Uint32 frameStart;
     int frameTime;
-
     Uint32 lastSpawnTime = SDL_GetTicks();
     const int spawnInterval = 2000;
 
@@ -67,7 +60,7 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
                 handleMenuInput(event, running, gameState);
             }
             else if (gameState == GAME) {
-                handleInput(event, player, running);
+                handleInput(event, running);
             }
         }
 
@@ -77,9 +70,11 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
         else if (gameState == GAME) {
             frameStart = SDL_GetTicks();
 
-            handleInput(event, player, running);
+            handleInput(event, running);
             updatePlayerMovement(player);
-            
+            updateShooting(player);
+            updateCollisions(player, enemies, bullets);
+
             if (SDL_GetTicks() - lastSpawnTime > spawnInterval) {
                 spawnEnemy();
                 lastSpawnTime = SDL_GetTicks();
@@ -92,8 +87,6 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
             bullets.erase(remove_if(bullets.begin(), bullets.end(), [](Bullet& bullet) {
                 return bullet.x < 0 || bullet.x > SCREEN_WIDTH || bullet.y < 0 || bullet.y > SCREEN_HEIGHT;
             }), bullets.end());        
-
-            updateCollisions(player, enemies, bullets);
 
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); 
             SDL_RenderClear(renderer);
