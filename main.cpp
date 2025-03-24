@@ -237,22 +237,55 @@ void handleMenuInput(SDL_Event& event, bool& running, GameState& gameState) {
     }
 }
 
-void renderMenu(SDL_Renderer* renderer) {
+void renderText(SDL_Renderer* renderer, TTF_Font* font, const char* text, int x, int y) {
+    SDL_Color textColor = {255, 255, 255};
+    SDL_Surface* textSurface = TTF_RenderText_Solid(font, text, textColor);
+    if (!textSurface) {
+        printf("Text rendering failed! SDL_ttf Error: %s\n", TTF_GetError());
+        return;
+    }
+    
+    SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+    SDL_Rect textRect = {x, y, textSurface->w, textSurface->h};
+    SDL_FreeSurface(textSurface);
+
+    SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+    SDL_DestroyTexture(textTexture);
+}
+
+void renderMenu(SDL_Renderer* renderer, TTF_Font* font) {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
-    renderButton(renderer, 700, 300, 200, 60, "Start Game");
-    renderButton(renderer, 700, 400, 200, 60, "Upgrades");
-    renderButton(renderer, 700, 500, 200, 60, "Exit");
+    SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
+
+    SDL_Rect startButton = {350, 200, 200, 50};
+    SDL_Rect upgradesButton = {350, 300, 200, 50};
+    SDL_Rect exitButton = {350, 400, 200, 50};
+
+    SDL_RenderFillRect(renderer, &startButton);
+    SDL_RenderFillRect(renderer, &upgradesButton);
+    SDL_RenderFillRect(renderer, &exitButton);
+
+    renderText(renderer, font, "Start Game", 400, 215);
+    renderText(renderer, font, "Upgrades", 420, 315);
+    renderText(renderer, font, "Exit", 450, 415);
 
     SDL_RenderPresent(renderer);
 }
+
 
 
 void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
     bool running = true;
     SDL_Event event;
     GameState gameState = MENU;
+
+    TTF_Font* font = TTF_OpenFont("OpenSans.ttf", 24);
+    if (!font) {
+        printf("Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
+        return;
+    }
 
     Player player = { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 50, 50, 3 };
 
@@ -283,7 +316,7 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
         }
 
         if (gameState == MENU) {
-            renderMenu(renderer);
+            renderMenu(renderer, font);
         } else if (gameState == GAME) {
             frameStart = SDL_GetTicks();
 
