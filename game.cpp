@@ -3,7 +3,7 @@
 #include "enemy.cpp"
 #include "bullet.cpp"
 #include "collision.cpp"
-#include "rendering.cpp"
+#include "menu.cpp"
 
 bool init(SDL_Window*& window, SDL_Renderer*& renderer) {
 
