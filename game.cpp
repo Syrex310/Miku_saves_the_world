@@ -83,7 +83,9 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
             for (auto& enemy : enemies) {
                 enemy.moveTowardPlayer(player);
             }
-            
+            for (auto& bullet : bullets){
+                bullet.move();
+            }
             bullets.erase(remove_if(bullets.begin(), bullets.end(), [](Bullet& bullet) {
                 return bullet.x < 0 || bullet.x > SCREEN_WIDTH || bullet.y < 0 || bullet.y > SCREEN_HEIGHT;
             }), bullets.end());        
@@ -91,7 +93,6 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); 
             SDL_RenderClear(renderer);
             
-            updateBullets(bullets);
             renderPlayer(renderer, player);
             renderEnemies(renderer);
             renderBullets(renderer);

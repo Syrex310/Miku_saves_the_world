@@ -16,7 +16,7 @@ struct Player {
     int x, y;
     int width, height;
     int speed;
-    int health = 10;
+    int health = 100;
     Uint32 lastDamageTime = 0;
 };
 

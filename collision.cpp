@@ -9,7 +9,7 @@ void updateCollisions(Player& player, vector<Enemy>& enemies, vector<Bullet>& bu
         if (checkCollision(player.x, player.y, player.width, player.height, enemy.x, enemy.y, enemy.width, enemy.height)) {
             Uint32 currentTime = SDL_GetTicks();
             if (currentTime - player.lastDamageTime >= 999) {
-                player.health -= 1;
+                player.health -= 10;
                 player.lastDamageTime = currentTime;
             }
         }
