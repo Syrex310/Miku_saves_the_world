@@ -9,8 +9,8 @@ void Enemy::moveTowardPlayer(Player& player) {
     if (length != 0) {
         float normalizedX = dx / length;
         float normalizedY = dy / length;
-        x += round((normalizedX / length) * speed);
-        y += round((normalizedY / length) * speed);
+        x += round((normalizedX) * speed);
+        y += round((normalizedY) * speed);
     }
 }
 

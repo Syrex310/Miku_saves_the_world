@@ -53,13 +53,13 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
     }    
 
     const int FPS = 60;
-    const int frameDelay = 1500 / FPS; 
+    const int frameDelay = 1000 / FPS; 
 
     Uint32 frameStart;
     int frameTime;
 
     Uint32 lastSpawnTime = SDL_GetTicks();
-    const int spawnInterval = 5000;
+    const int spawnInterval = 2000;
 
     while (running) {
         while (SDL_PollEvent(&event)) {
@@ -113,8 +113,5 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
                 SDL_Delay(frameDelay - frameTime);
             }
         }
-
-        SDL_Delay(16);
-        
     }
 }
