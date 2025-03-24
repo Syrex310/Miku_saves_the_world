@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <algorithm>
 
 const int SCREEN_WIDTH = 1600;
 const int SCREEN_HEIGHT = 900;
@@ -27,7 +28,23 @@ struct Enemy {
 
 struct Bullet {
     float x, y;
+    float speed = 10;
     float speedX, speedY;
+    Bullet(int startX, int startY, int targetX, int targetY) {
+        x = startX;
+        y = startY;
+
+        float dx = targetX - startX;
+        float dy = targetY - startY;
+        float length = sqrt(dx * dx + dy * dy);
+        if (length != 0) {
+            speedX = (dx / length) * speed;
+            speedY = (dy / length) * speed;
+        } else {
+            speedX = 0;
+            speedY = 0;
+        }
+    }
     void move();
 };
 

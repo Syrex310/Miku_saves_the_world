@@ -7,8 +7,10 @@ void Enemy::moveTowardPlayer(Player& player) {
     int dy = player.y - y;
     float length = sqrt(dx * dx + dy * dy);
     if (length != 0) {
-        x += round((dx / length) * speed);
-        y += round((dy / length) * speed);
+        float normalizedX = dx / length;
+        float normalizedY = dy / length;
+        x += round((normalizedX / length) * speed);
+        y += round((normalizedY / length) * speed);
     }
 }
 
@@ -18,4 +20,13 @@ void renderEnemies(SDL_Renderer* renderer) {
         SDL_Rect rect = { enemy.x, enemy.y, enemy.width, enemy.height };
         SDL_RenderFillRect(renderer, &rect);
     }
+}
+void spawnEnemy() {
+    Enemy enemy;
+    enemy.x = rand() % SCREEN_WIDTH;
+    enemy.y = rand() % SCREEN_HEIGHT;
+    enemy.width = 40;
+    enemy.height = 40;
+    enemy.speed = 2;
+    enemies.push_back(enemy);
 }
