@@ -4,6 +4,8 @@
 #include "bullet.cpp"
 #include "collision.cpp"
 #include "menu.cpp"
+#include "save.cpp"
+using namespace std;
 
 bool init(SDL_Window*& window, SDL_Renderer*& renderer) {
 
@@ -97,7 +99,6 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
             renderEnemies(renderer);
             renderBullets(renderer);
             renderHealth(renderer, player);
-
 
             SDL_RenderPresent(renderer);
 
