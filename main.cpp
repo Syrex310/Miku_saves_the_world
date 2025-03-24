@@ -12,12 +12,15 @@ struct Player {
     int x, y;
     int width, height;
     int speed;
+    int health = 10;
+    Uint32 lastDamageTime =0;
 };
 
 struct Enemy {
     int x, y;
     int width, height;
     int speed;
+    int health = 50;
 
     void moveTowardPlayer(Player& player) {
         int dx = player.x - x;
@@ -32,25 +35,24 @@ struct Enemy {
             y += round(normalizedY * speed);
         }
     }
-    
 };
 vector<Enemy> enemies;
 
 struct Bullet {
-    int x, y;
-    int speed = 10;
-    int speedX, speedY;
+    float x, y;
+    float speed = 10;
+    float speedX, speedY;
 
     Bullet(int startX, int startY, int targetX, int targetY) {
         x = startX;
         y = startY;
 
-        int dx = targetX - startX;
-        int dy = targetY - startY;
+        float dx = targetX - startX;
+        float dy = targetY - startY;
         float length = sqrt(dx * dx + dy * dy);
         if (length != 0) {
-            speedX = round(dx / length);
-            speedY = round(dy / length);
+            speedX = (dx / length) * speed;
+            speedY = (dy / length) * speed;
         } else {
             speedX = 0;
             speedY = 0;
@@ -58,11 +60,42 @@ struct Bullet {
     }
 
     void move() {
-        x += speedX * speed;
-        y += speedY * speed;
+        x += speedX;
+        y += speedY;
     }
 };
+
 vector<Bullet> bullets;
+
+bool checkCollision(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2) {
+    return x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && y1 + h1 > y2;
+}
+
+void updateCollisions(Player& player, vector<Enemy>& enemies, vector<Bullet>& bullets) {
+    for (auto& enemy : enemies) {
+        if (checkCollision(player.x, player.y, player.width, player.height, enemy.x, enemy.y, enemy.width, enemy.height)) {
+            Uint32 currentTime = SDL_GetTicks();
+            if (currentTime - player.lastDamageTime >= 999) {
+                player.health -= 1;
+                player.lastDamageTime = currentTime;
+            }
+        }
+    }
+    
+    for (auto& bullet : bullets) {
+        for (auto& enemy : enemies) {
+            if (checkCollision(static_cast<int>(bullet.x), static_cast<int>(bullet.y), 5, 5, enemy.x, enemy.y, enemy.width, enemy.height)) {
+                enemy.health -= 25;
+                bullet.x = -1000; 
+            }
+        }
+    }
+    
+    enemies.erase(remove_if(enemies.begin(), enemies.end(), [](Enemy& enemy) { return enemy.health <= 0; }), enemies.end());
+    bullets.erase(remove_if(bullets.begin(), bullets.end(), [](Bullet& bullet) {
+        return bullet.x < 0 || bullet.x > SCREEN_WIDTH || bullet.y < 0 || bullet.y > SCREEN_HEIGHT;
+    }), bullets.end());
+}
 
 
 bool init(SDL_Window*& window, SDL_Renderer*& renderer) {
@@ -136,10 +169,12 @@ void renderEnemies(SDL_Renderer* renderer) {
 void renderBullets(SDL_Renderer* renderer) {
     SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255); 
     for (auto& bullet : bullets) {
-        SDL_Rect rect = { bullet.x, bullet.y, 5, 5 }; 
+        SDL_Rect rect = { static_cast<int>(bullet.x), static_cast<int>(bullet.y), 5, 5 }; 
         SDL_RenderFillRect(renderer, &rect);
+        bullet.move();
     }
 }
+
 void updateBullets(vector<Bullet>& bullets) {
     for (auto& bullet : bullets) {
         bullet.x += bullet.speedX;
@@ -170,7 +205,11 @@ void shootBullet(vector<Bullet>& bullets, Player& player) {
     bullets.push_back(bullet);
 }
 
-
+void renderHealth(SDL_Renderer* renderer, Player& player) {
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_Rect healthBar = { 20, 20, player.health * 2, 10 };
+    SDL_RenderFillRect(renderer, &healthBar);
+}
 
 void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
     bool running = true;
@@ -214,6 +253,8 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
             return bullet.x < 0 || bullet.x > SCREEN_WIDTH || bullet.y < 0 || bullet.y > SCREEN_HEIGHT;
         }), bullets.end());        
 
+        updateCollisions(player, enemies, bullets);
+
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); 
         SDL_RenderClear(renderer);
         
@@ -221,7 +262,8 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
         renderPlayer(renderer, player);
         renderEnemies(renderer);
         renderBullets(renderer);
-        
+        renderHealth(renderer, player);
+
 
         SDL_RenderPresent(renderer);
 
