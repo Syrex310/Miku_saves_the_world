@@ -3,9 +3,13 @@
 #include <vector>
 #include <cmath>
 #include <algorithm> 
+#include <SDL2/SDL_ttf.h>
 
-const int SCREEN_WIDTH = 800;
-const int SCREEN_HEIGHT = 600;
+const int SCREEN_WIDTH = 1600;
+const int SCREEN_HEIGHT = 900;
+enum GameState { MENU, GAME, UPGRADES };
+TTF_Font* font = TTF_OpenFont("OpenSans-Italic-VariableFont_wdth,wght.ttf", 24);
+
 
 using namespace std;
 struct Player {
@@ -211,9 +215,44 @@ void renderHealth(SDL_Renderer* renderer, Player& player) {
     SDL_RenderFillRect(renderer, &healthBar);
 }
 
+void renderButton(SDL_Renderer* renderer, int x, int y, int w, int h, const char* text) {
+    SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
+    SDL_Rect button = { x, y, w, h };
+    SDL_RenderFillRect(renderer, &button);
+}
+
+void handleMenuInput(SDL_Event& event, bool& running, GameState& gameState) {
+    if (event.type == SDL_QUIT) {
+        running = false;
+    }
+    if (event.type == SDL_MOUSEBUTTONDOWN) {
+        int mouseX, mouseY;
+        SDL_GetMouseState(&mouseX, &mouseY);
+
+        if (mouseX > 700 && mouseX < 900) {
+            if (mouseY > 300 && mouseY < 360) gameState = GAME; 
+            if (mouseY > 400 && mouseY < 460) gameState = UPGRADES; 
+            if (mouseY > 500 && mouseY < 560) running = false; 
+        }
+    }
+}
+
+void renderMenu(SDL_Renderer* renderer) {
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderClear(renderer);
+
+    renderButton(renderer, 700, 300, 200, 60, "Start Game");
+    renderButton(renderer, 700, 400, 200, 60, "Upgrades");
+    renderButton(renderer, 700, 500, 200, 60, "Exit");
+
+    SDL_RenderPresent(renderer);
+}
+
+
 void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
     bool running = true;
     SDL_Event event;
+    GameState gameState = MENU;
 
     Player player = { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 50, 50, 3 };
 
@@ -235,43 +274,58 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
     const int spawnInterval = 5000;
 
     while (running) {
-        frameStart = SDL_GetTicks();
-
-        handleInput(event, player, running);
-        updatePlayerMovement(player);
-        
-        if (SDL_GetTicks() - lastSpawnTime > spawnInterval) {
-            spawnEnemy();
-            lastSpawnTime = SDL_GetTicks();
+        while (SDL_PollEvent(&event)) {
+            if (gameState == MENU) {
+                handleMenuInput(event, running, gameState);
+            } else if (gameState == GAME) {
+                handleInput(event, player, running);
+            }
         }
 
-        for (auto& enemy : enemies) {
-            enemy.moveTowardPlayer(player);
+        if (gameState == MENU) {
+            renderMenu(renderer);
+        } else if (gameState == GAME) {
+            frameStart = SDL_GetTicks();
+
+            handleInput(event, player, running);
+            updatePlayerMovement(player);
+            
+            if (SDL_GetTicks() - lastSpawnTime > spawnInterval) {
+                spawnEnemy();
+                lastSpawnTime = SDL_GetTicks();
+            }
+
+            for (auto& enemy : enemies) {
+                enemy.moveTowardPlayer(player);
+            }
+            
+            bullets.erase(remove_if(bullets.begin(), bullets.end(), [](Bullet& bullet) {
+                return bullet.x < 0 || bullet.x > SCREEN_WIDTH || bullet.y < 0 || bullet.y > SCREEN_HEIGHT;
+            }), bullets.end());        
+
+            updateCollisions(player, enemies, bullets);
+
+            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); 
+            SDL_RenderClear(renderer);
+            
+            updateBullets(bullets);
+            renderPlayer(renderer, player);
+            renderEnemies(renderer);
+            renderBullets(renderer);
+            renderHealth(renderer, player);
+
+
+            SDL_RenderPresent(renderer);
+
+            // Frame rate control
+            frameTime = SDL_GetTicks() - frameStart;
+            if (frameDelay > frameTime) {
+                SDL_Delay(frameDelay - frameTime);
+            }
         }
+
+        SDL_Delay(16);
         
-        bullets.erase(remove_if(bullets.begin(), bullets.end(), [](Bullet& bullet) {
-            return bullet.x < 0 || bullet.x > SCREEN_WIDTH || bullet.y < 0 || bullet.y > SCREEN_HEIGHT;
-        }), bullets.end());        
-
-        updateCollisions(player, enemies, bullets);
-
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); 
-        SDL_RenderClear(renderer);
-        
-        updateBullets(bullets);
-        renderPlayer(renderer, player);
-        renderEnemies(renderer);
-        renderBullets(renderer);
-        renderHealth(renderer, player);
-
-
-        SDL_RenderPresent(renderer);
-
-        // Frame rate control
-        frameTime = SDL_GetTicks() - frameStart;
-        if (frameDelay > frameTime) {
-            SDL_Delay(frameDelay - frameTime);
-        }
     }
 }
 
