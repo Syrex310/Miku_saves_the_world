@@ -61,9 +61,17 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
 
     Player player = { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 50, 50, 5 };
 
+    const int FPS = 60;
+    const int frameDelay = 1000 / FPS; // 16 milliseconds per frame
+
+    Uint32 frameStart;
+    int frameTime;
+
     while (running) {
-        handleInput(event, running); // Only handle quit event
-        updatePlayerMovement(player); // Update movement once per frame
+        frameStart = SDL_GetTicks(); // Get time at start of frame
+
+        handleInput(event, running);
+        updatePlayerMovement(player);
 
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Black background
         SDL_RenderClear(renderer);
@@ -71,8 +79,15 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
         renderPlayer(renderer, player);
 
         SDL_RenderPresent(renderer);
+
+        // Frame rate control
+        frameTime = SDL_GetTicks() - frameStart;
+        if (frameDelay > frameTime) {
+            SDL_Delay(frameDelay - frameTime);
+        }
     }
 }
+
 
 void close(SDL_Window* window, SDL_Renderer* renderer) {
     SDL_DestroyRenderer(renderer);
