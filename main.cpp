@@ -1,4 +1,4 @@
-#include <SDL.h/SDL2>
+#include <SDL2/SDL.h>
 #include <iostream>
 
 const int SCREEN_WIDTH = 800;
