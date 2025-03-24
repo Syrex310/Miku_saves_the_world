@@ -31,16 +31,23 @@ bool init(SDL_Window*& window, SDL_Renderer*& renderer) {
     return true;
 }
 
-void handleInput(SDL_Event& event, Player& player, bool& running) {
+void handleInput(SDL_Event& event, bool& running) {
+    while (SDL_PollEvent(&event)) {
+        if (event.type == SDL_QUIT) {
+            running = false;
+        }
+    }
+}
+
+void updatePlayerMovement(Player& player) {
     const Uint8* keystate = SDL_GetKeyboardState(NULL);
 
-    if (keystate[SDL_SCANCODE_LEFT]) player.x -= player.speed;
-    if (keystate[SDL_SCANCODE_RIGHT]) player.x += player.speed;
-    if (keystate[SDL_SCANCODE_UP]) player.y -= player.speed;
-    if (keystate[SDL_SCANCODE_DOWN]) player.y += player.speed;
-
-    if (event.type == SDL_QUIT) running = false;
+    if (keystate[SDL_SCANCODE_A]) player.x -= player.speed;
+    if (keystate[SDL_SCANCODE_D]) player.x += player.speed;
+    if (keystate[SDL_SCANCODE_W]) player.y -= player.speed;
+    if (keystate[SDL_SCANCODE_S]) player.y += player.speed;
 }
+
 
 void renderPlayer(SDL_Renderer* renderer, Player& player) {
     SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); // Green player
@@ -55,9 +62,8 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
     Player player = { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 50, 50, 5 };
 
     while (running) {
-        while (SDL_PollEvent(&event)) {
-            handleInput(event, player, running);
-        }
+        handleInput(event, running); // Only handle quit event
+        updatePlayerMovement(player); // Update movement once per frame
 
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Black background
         SDL_RenderClear(renderer);
