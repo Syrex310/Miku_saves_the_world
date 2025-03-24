@@ -8,7 +8,6 @@
 const int SCREEN_WIDTH = 1600;
 const int SCREEN_HEIGHT = 900;
 enum GameState { MENU, GAME, UPGRADES };
-TTF_Font* font = TTF_OpenFont("OpenSans-Italic-VariableFont_wdth,wght.ttf", 24);
 
 
 using namespace std;
@@ -103,10 +102,16 @@ void updateCollisions(Player& player, vector<Enemy>& enemies, vector<Bullet>& bu
 
 
 bool init(SDL_Window*& window, SDL_Renderer*& renderer) {
+
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
         cout << "SDL could not initialize! SDL_Error: " << SDL_GetError() << endl;
         return false;
     }
+    if (TTF_Init() == -1) {
+        cout << "SDL_ttf could not initialize! SDL_ttf Error: " << TTF_GetError() << endl;
+        return false;
+    }
+    
 
     window = SDL_CreateWindow("SDL Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if (!window) {
@@ -229,10 +234,10 @@ void handleMenuInput(SDL_Event& event, bool& running, GameState& gameState) {
         int mouseX, mouseY;
         SDL_GetMouseState(&mouseX, &mouseY);
 
-        if (mouseX > 700 && mouseX < 900) {
-            if (mouseY > 300 && mouseY < 360) gameState = GAME; 
-            if (mouseY > 400 && mouseY < 460) gameState = UPGRADES; 
-            if (mouseY > 500 && mouseY < 560) running = false; 
+        if (mouseX > 700 && mouseX < 900) {  
+            if (mouseY > 300 && mouseY < 350) gameState = GAME;  
+            if (mouseY > 400 && mouseY < 450) gameState = UPGRADES;  
+            if (mouseY > 500 && mouseY < 550) running = false;  
         }
     }
 }
@@ -257,22 +262,27 @@ void renderMenu(SDL_Renderer* renderer, TTF_Font* font) {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
-    SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
+    int buttonWidth = 200;
+    int buttonHeight = 50;
+    int centerX = (1600 - buttonWidth) / 2;
+    int startY = 300;
+    int spacing = 100;
 
-    SDL_Rect startButton = {350, 200, 200, 50};
-    SDL_Rect upgradesButton = {350, 300, 200, 50};
-    SDL_Rect exitButton = {350, 400, 200, 50};
+    SDL_Rect startButton = {centerX, startY, buttonWidth, buttonHeight};
+    SDL_Rect upgradesButton = {centerX, startY + spacing, buttonWidth, buttonHeight};
+    SDL_Rect exitButton = {centerX, startY + spacing * 2, buttonWidth, buttonHeight};
 
     SDL_RenderFillRect(renderer, &startButton);
     SDL_RenderFillRect(renderer, &upgradesButton);
     SDL_RenderFillRect(renderer, &exitButton);
 
-    renderText(renderer, font, "Start Game", 400, 215);
-    renderText(renderer, font, "Upgrades", 420, 315);
-    renderText(renderer, font, "Exit", 450, 415);
+    renderText(renderer, font, "Start Game", centerX + 50, startY + 15);
+    renderText(renderer, font, "Upgrades", centerX + 60, startY + spacing + 15);
+    renderText(renderer, font, "Exit", centerX + 85, startY + spacing * 2 + 15);
 
     SDL_RenderPresent(renderer);
 }
+
 
 
 
@@ -281,18 +291,11 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
     SDL_Event event;
     GameState gameState = MENU;
 
-    TTF_Font* font = TTF_OpenFont("OpenSans.ttf", 24);
-    if (!font) {
-        printf("Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
-        return;
-    }
+    TTF_Font* font = TTF_OpenFont("OpenSans-Italic-VariableFont_wdth,wght.ttf", 24);
+
 
     Player player = { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 50, 50, 3 };
-
-    for (int i = 0; i < 5; i ++){
-        spawnEnemy();
-    }
-
+    
     for (auto& bullet : bullets) {
         bullet.move();
     }    
