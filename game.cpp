@@ -53,7 +53,7 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
     }    
 
     const int FPS = 60;
-    const int frameDelay = 1000 / FPS; 
+    const int frameDelay = 1500 / FPS; 
 
     Uint32 frameStart;
     int frameTime;
@@ -65,14 +65,16 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
         while (SDL_PollEvent(&event)) {
             if (gameState == MENU) {
                 handleMenuInput(event, running, gameState);
-            } else if (gameState == GAME) {
+            }
+            else if (gameState == GAME) {
                 handleInput(event, player, running);
             }
         }
 
         if (gameState == MENU) {
             renderMenu(renderer, font);
-        } else if (gameState == GAME) {
+        }
+        else if (gameState == GAME) {
             frameStart = SDL_GetTicks();
 
             handleInput(event, player, running);
