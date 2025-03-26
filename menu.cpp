@@ -29,7 +29,7 @@ void renderPauseMenu(SDL_Renderer* renderer, TTF_Font* font) {
 
 void handleMenuInput(SDL_Event& event, bool& running, GameState& gameState) {
     if (event.type == SDL_QUIT) {
-        saveGame(currency);
+        saveGame(currency, health);
         running = false;
     }
     if (event.type == SDL_MOUSEBUTTONDOWN) {

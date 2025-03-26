@@ -21,12 +21,55 @@ void renderEnemies(SDL_Renderer* renderer) {
         SDL_RenderFillRect(renderer, &rect);
     }
 }
-void spawnEnemy() {
+void spawnEnemy(int currentWave) {
+    const int SAFE_ZONE_RADIUS = 200;
     Enemy enemy;
-    enemy.x = rand() % SCREEN_WIDTH;
-    enemy.y = rand() % SCREEN_HEIGHT;
+    bool tooClose;
+
+    do {
+        enemy.x = rand() % SCREEN_WIDTH;  
+        enemy.y = rand() % SCREEN_HEIGHT;  
+
+        int dx = enemy.x - player.x;
+        int dy = enemy.y - player.y;
+        float distance = sqrt(dx * dx + dy * dy);
+
+        tooClose = (distance < SAFE_ZONE_RADIUS);
+    } while (tooClose);
+
     enemy.width = 40;
     enemy.height = 40;
-    enemy.speed = 2;
+    enemy.speed = 2 + (0.2 * currentWave);
+    enemy.health += (10 * currentWave);
+
     enemies.push_back(enemy);
+}
+
+void spawnWaves(int &currentWave, int maxWaves, bool &waveActive, Uint32 &lastWaveTime, int &enemiesSpawned, Uint32 &lastEnemySpawnTime) {
+    if (currentWave >= maxWaves) return;
+
+    Uint32 currentTime = SDL_GetTicks();
+    
+    int Time_interval=1000;
+    if (enemies.empty() && !waveActive && (currentTime - lastWaveTime >= 5000)) {
+        currentWave++;
+        waveActive = true;
+        lastWaveTime = currentTime;
+        enemiesSpawned = 0;
+        Time_interval-=50;
+
+        
+        cout << "Wave " << currentWave << " started with " << 3*pow(currentWave,2) << " enemies!" << endl;
+    }
+    int totalEnemies = 3*pow(currentWave,2);
+    if (waveActive && enemiesSpawned < totalEnemies && (currentTime - lastEnemySpawnTime >= Time_interval)){
+        spawnEnemy(currentWave);
+        enemiesSpawned+=1;
+        lastEnemySpawnTime=currentTime;
+    }
+
+    if (enemiesSpawned >= totalEnemies && !enemies.empty()) {
+        lastWaveTime=currentTime;
+        waveActive = false;
+    }
 }

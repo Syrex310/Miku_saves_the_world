@@ -18,7 +18,8 @@ struct Player {
     int x, y;
     int width, height;
     int speed;
-    int health = 100;
+    int health;
+    int maxhealth;
     Uint32 lastDamageTime = 0;
 };
 
@@ -58,8 +59,9 @@ void renderText(SDL_Renderer* renderer, TTF_Font* font, const char* text, int x,
 
 extern Player player;
 extern int currency;
-extern void saveGame(int currency);
-extern void loadGame(int &currency);
+extern int health;
+extern void saveGame(int currency, int health);
+extern void loadGame(int &currency, int &health);
 extern void purchaseUpgrade(Player& player);
 extern vector<Bullet> bullets;
 extern vector<Enemy> enemies;

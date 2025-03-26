@@ -6,16 +6,16 @@
 #include "bullet.cpp"
 #include "menu.cpp"
 
-using namespace std;
 
 string currencyText;
 int currency;
+int health = 100;
 TTF_Font* font = nullptr;
-Player player = { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 50, 50, 3 };
+Player player = { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 40, 40, 3, health, health};
 
 
 void initializeGame() {
-    loadGame(currency);
+    loadGame(currency, health);
     if (TTF_Init() == -1) {
         cout << "SDL_ttf could not initialize! SDL_ttf Error: " << TTF_GetError() << endl;
         exit(1);
@@ -46,12 +46,6 @@ bool init(SDL_Window*& window, SDL_Renderer*& renderer) {
         cout << "SDL could not initialize! SDL_Error: " << SDL_GetError() << endl;
         return false;
     }
-    if (TTF_Init() == -1) {
-        cout << "SDL_ttf could not initialize! SDL_ttf Error: " << TTF_GetError() << endl;
-        return false;
-    }
-    
-
     window = SDL_CreateWindow("SDL Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if (!window) {
         cout << "Window could not be created! SDL_Error: " << SDL_GetError() << endl;
@@ -81,7 +75,7 @@ void close(SDL_Window* window, SDL_Renderer* renderer) {
 
 
 void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
-    initializeGame();
+
     bool running = true;
     SDL_Event event;
     GameState gameState = MENU;
@@ -91,8 +85,13 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
 
     Uint32 frameStart;
     int frameTime;
-    Uint32 lastSpawnTime = SDL_GetTicks();
-    const int spawnInterval = 2000;
+
+    int currentWave = 0;
+    int maxWaves = 10;
+    bool waveActive = false;
+    Uint32 lastWaveTime = SDL_GetTicks();
+    int enemiesSpawned = 0;
+    Uint32 lastEnemySpawnTime = SDL_GetTicks();
 
     while (running) {
         while (SDL_PollEvent(&event)) {
@@ -116,12 +115,7 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
             updatePlayerMovement(player);
             updateShooting(player);
             updateCollisions(player, enemies, bullets);
-
-            if (SDL_GetTicks() - lastSpawnTime > spawnInterval) {
-                spawnEnemy();
-                lastSpawnTime = SDL_GetTicks();
-            }
-
+            spawnWaves(currentWave, maxWaves, waveActive, lastWaveTime, enemiesSpawned, lastEnemySpawnTime);
             for (auto& enemy : enemies) {
                 enemy.moveTowardPlayer(player);
             }
@@ -139,11 +133,11 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
             renderEnemies(renderer);
             renderBullets(renderer);
             renderHealth(renderer, player);
+            renderRemainHealth(renderer,player);
             renderCurrency(renderer, currency);
 
             SDL_RenderPresent(renderer);
 
-            // Frame rate control
             frameTime = SDL_GetTicks() - frameStart;
             if (frameDelay > frameTime) {
                 SDL_Delay(frameDelay - frameTime);

@@ -1,5 +1,4 @@
 #include "common.hpp"
-using namespace std;
 vector<Bullet> bullets;
 void Bullet::move() {
     x += speedX;
@@ -25,14 +24,14 @@ void handleGameInput(SDL_Event& event, bool& running, GameState& gameState) {
     int spacing = 100;
 
     if (event.type == SDL_QUIT) {
-        saveGame(currency);
+        saveGame(currency, health);
         running = false;
     }
     else if (event.type == SDL_KEYDOWN  && event.key.repeat == 0) {
         if (event.key.keysym.sym == SDLK_ESCAPE) {
             //cout<<"Game resumed / Game Paused";
             if (gameState == GAME) {
-                saveGame(currency);
+                saveGame(currency, health);
                 gameState = PAUSED;
             } 
             else if (gameState == PAUSED) {
@@ -49,7 +48,7 @@ void handleGameInput(SDL_Event& event, bool& running, GameState& gameState) {
                 gameState = MENU;
             }
             if (mouseY > centerY + 160 && mouseY < centerY + 220) {
-                saveGame(currency);
+                saveGame(currency, health);
                 running = false;
             }
         }

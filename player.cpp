@@ -13,8 +13,13 @@ void renderPlayer(SDL_Renderer* renderer, Player& player) {
     SDL_Rect rect = { player.x, player.y, player.width, player.height };
     SDL_RenderFillRect(renderer, &rect);
 }
-void renderHealth(SDL_Renderer* renderer, Player& player) {
+void renderRemainHealth(SDL_Renderer* renderer, Player& player) {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_Rect healthBar = { 20, 20, player.health * 2, 10 };
+    SDL_Rect remainhealthBar = { 20, 20, 200 * player.health / player.maxhealth, 10 };
+    SDL_RenderFillRect(renderer, &remainhealthBar);
+}
+void renderHealth(SDL_Renderer* renderer, Player& player) {
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+    SDL_Rect healthBar = { 20, 20, 200, 10 };
     SDL_RenderFillRect(renderer, &healthBar);
 }
