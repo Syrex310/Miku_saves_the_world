@@ -1,16 +1,18 @@
 #include "common.hpp"
-#include "player.cpp"
-#include "enemy.cpp"
-#include "bullet.cpp"
-#include "collision.cpp"
-#include "menu.cpp"
 #include "save.cpp"
+#include "enemy.cpp"
+#include "player.cpp"
+#include "collision.cpp"
+#include "bullet.cpp"
+#include "menu.cpp"
+
 using namespace std;
 
-extern Player player;
 string currencyText;
 int currency;
 TTF_Font* font = nullptr;
+Player player = { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 50, 50, 3 };
+
 
 void initializeGame() {
     loadGame(currency);
@@ -98,7 +100,7 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
                 handleMenuInput(event, running, gameState);
             }
             else if (gameState == GAME || gameState == PAUSED) {
-                handleInput(event, running, gameState);
+                handleGameInput(event, running, gameState);
             }
         }
 

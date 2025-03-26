@@ -1,9 +1,6 @@
 #include "common.hpp"
 using namespace std;
 vector<Bullet> bullets;
-extern int currency;
-extern void saveGame(int currency);
-
 void Bullet::move() {
     x += speedX;
     y += speedY;
@@ -17,7 +14,7 @@ void renderBullets(SDL_Renderer* renderer) {
 }
 bool isShooting = false;
 Uint32 lastShotTime = 0;
-void handleInput(SDL_Event& event, bool& running, GameState& gameState) {
+void handleGameInput(SDL_Event& event, bool& running, GameState& gameState) {
     int mouseX, mouseY;
     SDL_GetMouseState(&mouseX, &mouseY);
     int buttonWidth = 200;
@@ -33,7 +30,7 @@ void handleInput(SDL_Event& event, bool& running, GameState& gameState) {
     }
     else if (event.type == SDL_KEYDOWN  && event.key.repeat == 0) {
         if (event.key.keysym.sym == SDLK_ESCAPE) {
-            cout<<"Game resumed / Game Paused";
+            //cout<<"Game resumed / Game Paused";
             if (gameState == GAME) {
                 saveGame(currency);
                 gameState = PAUSED;

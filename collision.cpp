@@ -1,6 +1,4 @@
 #include "common.hpp"
-extern int currency;
-extern void saveGame(int currency);
 
 void enemyDefeated(){
     currency+=1;

@@ -1,6 +1,5 @@
 #include "common.hpp"
-extern void purchaseUpgrade(Player& player);
-extern Player player;
+
 
 void renderPauseMenu(SDL_Renderer* renderer, TTF_Font* font) {
     int buttonWidth = 300;
@@ -37,7 +36,7 @@ void handleMenuInput(SDL_Event& event, bool& running, GameState& gameState) {
         int mouseX, mouseY;
         SDL_GetMouseState(&mouseX, &mouseY);
 
-        cout << "Mouse Clicked at: " << mouseX << ", " << mouseY << endl;
+        //cout << "Mouse Clicked at: " << mouseX << ", " << mouseY << endl;
 
         int buttonWidth = 200;
         int buttonHeight = 50;

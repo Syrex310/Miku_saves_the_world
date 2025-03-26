@@ -7,6 +7,7 @@
 #include <cmath>
 #include <algorithm>
 
+
 using namespace std;
 
 const int SCREEN_WIDTH = 1600;
@@ -54,3 +55,11 @@ struct Bullet {
 bool checkCollision(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 void updateCollisions(Player& player, vector<Enemy>& enemies, vector<Bullet>& bullets);
 void renderText(SDL_Renderer* renderer, TTF_Font* font, const char* text, int x, int y);
+
+extern Player player;
+extern int currency;
+extern void saveGame(int currency);
+extern void loadGame(int &currency);
+extern void purchaseUpgrade(Player& player);
+extern vector<Bullet> bullets;
+extern vector<Enemy> enemies;

@@ -1,6 +1,6 @@
+
 #include "common.hpp"
 using namespace std;
-extern int currency;
 
 void saveGame(int currency) {
     ofstream saveFile("save.txt");
