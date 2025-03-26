@@ -2,33 +2,82 @@
 extern void purchaseUpgrade(Player& player);
 extern Player player;
 
+void renderPauseMenu(SDL_Renderer* renderer, TTF_Font* font) {
+    int buttonWidth = 300;
+    int buttonHeight = 60;
+    int centerX = (1600 - buttonWidth) / 2;
+    int centerY = (900 - buttonHeight) / 2;
+
+    SDL_SetRenderDrawColor(renderer, 50, 50, 50, 255);
+    SDL_Rect bg = { centerX - 20, centerY - 40, buttonWidth + 40, buttonHeight * 3 + 80 };
+    SDL_RenderFillRect(renderer, &bg);
+
+    SDL_SetRenderDrawColor(renderer, 150, 150, 150, 255);
+    SDL_Rect resumeButton = { centerX, centerY, buttonWidth, buttonHeight };
+    SDL_Rect menuButton = { centerX, centerY + 80, buttonWidth, buttonHeight };
+    SDL_Rect exitButton = { centerX, centerY + 160, buttonWidth, buttonHeight };
+
+    SDL_RenderFillRect(renderer, &resumeButton);
+    SDL_RenderFillRect(renderer, &menuButton);
+    SDL_RenderFillRect(renderer, &exitButton);
+
+    renderText(renderer, font, "Resume", centerX + 90, centerY + 15);
+    renderText(renderer, font, "Main Menu", centerX + 75, centerY + 95);
+    renderText(renderer, font, "Exit Game", centerX + 80, centerY + 175);
+
+    SDL_RenderPresent(renderer);
+}
+
 void handleMenuInput(SDL_Event& event, bool& running, GameState& gameState) {
     if (event.type == SDL_QUIT) {
+        saveGame(currency);
         running = false;
     }
     if (event.type == SDL_MOUSEBUTTONDOWN) {
         int mouseX, mouseY;
         SDL_GetMouseState(&mouseX, &mouseY);
 
+        cout << "Mouse Clicked at: " << mouseX << ", " << mouseY << endl;
+
+        int buttonWidth = 200;
+        int buttonHeight = 50;
+        int centerX = (1600 - buttonWidth) / 2;
+        int centerY = (900 - buttonHeight) / 2;
+        int startY = 300;
+        int spacing = 100;
+
         if (gameState == MENU) {  
-            if (mouseX > 700 && mouseX < 900) {  
-                if (mouseY > 300 && mouseY < 350) gameState = GAME;  
-                if (mouseY > 400 && mouseY < 450) gameState = UPGRADES;  
-                if (mouseY > 500 && mouseY < 550) running = false;  
+            if (mouseX > centerX && mouseX < centerX + buttonWidth) {  
+                if (mouseY > startY && mouseY < startY + buttonHeight) {
+                    gameState = GAME;
+                    cout << "Start Game clicked!" << endl;
+                }
+                if (mouseY > startY + spacing && mouseY < startY + spacing + buttonHeight) {
+                    gameState = UPGRADES;
+                    cout << "Upgrades clicked!" << endl;
+                }
+                if (mouseY > startY + spacing * 2 && mouseY < startY + spacing * 2 + buttonHeight) {
+                    running = false;
+                    cout << "Exit clicked!" << endl;
+                }
             }
         } 
         else if (gameState == UPGRADES) {  
-            if (mouseX > 700 && mouseX < 900) {  
-                if (mouseY > 300 && mouseY < 350) { 
+            if (mouseX > centerX && mouseX < centerX + buttonWidth) {  
+                if (mouseY > startY && mouseY < startY + buttonHeight) { 
                     purchaseUpgrade(player);
+                    cout << "Upgrade clicked!" << endl;
                 }
-                if (mouseY > 500 && mouseY < 550) { 
+                if (mouseY > startY + spacing && mouseY < startY + spacing + buttonHeight) { 
                     gameState = MENU;
+                    cout << "Back clicked!" << endl;
                 }
             }
         }
+        
     }
 }
+
 
 void renderMenu(SDL_Renderer* renderer, TTF_Font* font, GameState gameState) {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -59,18 +108,15 @@ void renderMenu(SDL_Renderer* renderer, TTF_Font* font, GameState gameState) {
 
         SDL_RenderFillRect(renderer, &upgradeButton);
         SDL_RenderFillRect(renderer, &backButton);
+        string currencyDisplay = "Currency: " + to_string(currency);
+        renderText(renderer, font, currencyDisplay.c_str(), centerX + 50, startY - 50);
+
 
         renderText(renderer, font, "Buy Upgrade (50)", centerX + 20, startY + 15);
         renderText(renderer, font, "Back", centerX + 85, startY + spacing + 15);
     }
 
     SDL_RenderPresent(renderer);
-}
-
-void renderButton(SDL_Renderer* renderer, int x, int y, int w, int h, const char* text) {
-    SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
-    SDL_Rect button = { x, y, w, h };
-    SDL_RenderFillRect(renderer, &button);
 }
 
 void renderText(SDL_Renderer* renderer, TTF_Font* font, const char* text, int x, int y) {

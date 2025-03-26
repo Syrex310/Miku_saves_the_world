@@ -32,7 +32,7 @@ void purchaseUpgrade(Player& player) {
         currency -= upgradeCost;
         saveGame(currency);
 
-        cout << "Upgrade purchased! Health increased, remaining currency: " << currency << endl;
+        cout << "Upgrade purchased! Health increased by 10, remaining currency: " << currency << endl;
     } else {
         cout << "Not enough currency for upgrade!" << endl;
     }

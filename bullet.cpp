@@ -17,19 +17,50 @@ void renderBullets(SDL_Renderer* renderer) {
 }
 bool isShooting = false;
 Uint32 lastShotTime = 0;
-void handleInput(SDL_Event& event, bool& running) {
-    while (SDL_PollEvent(&event)) {
-        if (event.type == SDL_QUIT) {
-            saveGame(currency);
-            running = false;
+void handleInput(SDL_Event& event, bool& running, GameState& gameState) {
+    int mouseX, mouseY;
+    SDL_GetMouseState(&mouseX, &mouseY);
+    int buttonWidth = 200;
+    int buttonHeight = 50;
+    int centerX = (1600 - buttonWidth) / 2;
+    int centerY = (900 - buttonHeight) / 2;
+    int startY = 300;
+    int spacing = 100;
+
+    if (event.type == SDL_QUIT) {
+        saveGame(currency);
+        running = false;
+    }
+    else if (event.type == SDL_KEYDOWN  && event.key.repeat == 0) {
+        if (event.key.keysym.sym == SDLK_ESCAPE) {
+            cout<<"Game resumed / Game Paused";
+            if (gameState == GAME) {
+                saveGame(currency);
+                gameState = PAUSED;
+            } 
+            else if (gameState == PAUSED) {
+                gameState = GAME;
+            }
         }
     }
-    if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-        isShooting = true;
-    } else {
-        isShooting = false;
+    else if (event.type == SDL_MOUSEBUTTONDOWN && gameState == PAUSED) {
+        if (mouseX > centerX && mouseX < centerX + 300) {  
+            if (mouseY > centerY && mouseY < centerY + 60) {
+                gameState = GAME;
+            }
+            if (mouseY > centerY + 80 && mouseY < centerY + 140) {
+                gameState = MENU;
+            }
+            if (mouseY > centerY + 160 && mouseY < centerY + 220) {
+                saveGame(currency);
+                running = false;
+            }
+        }
     }
+    if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT)) isShooting = true;
+    else isShooting = false;
 }
+
 
 void updateShooting(Player& player) {
     Uint32 currentTime = SDL_GetTicks();

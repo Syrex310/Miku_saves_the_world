@@ -11,7 +11,7 @@ using namespace std;
 
 const int SCREEN_WIDTH = 1600;
 const int SCREEN_HEIGHT = 900;
-enum GameState { MENU, GAME, UPGRADES };
+enum GameState { MENU, GAME, UPGRADES, PAUSED };
 
 struct Player {
     int x, y;

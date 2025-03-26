@@ -31,7 +31,7 @@ void renderCurrency(SDL_Renderer* renderer, int currency){
     currencyText ="Currency: " + to_string(currency);
     SDL_Surface* surface = TTF_RenderText_Solid(font, currencyText.c_str(), textColor);
     SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-    SDL_Rect textRect = {10, 10, surface->w, surface->h};
+    SDL_Rect textRect = {SCREEN_WIDTH - surface->w - 10,10, surface->w, surface->h};
     SDL_RenderCopy(renderer, texture, NULL, &textRect);
     SDL_FreeSurface(surface);
     SDL_DestroyTexture(texture);
@@ -94,21 +94,23 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
 
     while (running) {
         while (SDL_PollEvent(&event)) {
-            if (gameState == MENU) {
+            if (gameState == MENU || gameState == UPGRADES){
                 handleMenuInput(event, running, gameState);
             }
-            else if (gameState == GAME) {
-                handleInput(event, running);
+            else if (gameState == GAME || gameState == PAUSED) {
+                handleInput(event, running, gameState);
             }
         }
 
-        if (gameState == MENU) {
+        if (gameState == MENU || gameState == UPGRADES) {
             renderMenu(renderer, font, gameState);
+        }
+        else if (gameState == PAUSED){
+            renderPauseMenu(renderer, font);
         }
         else if (gameState == GAME) {
             frameStart = SDL_GetTicks();
 
-            handleInput(event, running);
             updatePlayerMovement(player);
             updateShooting(player);
             updateCollisions(player, enemies, bullets);
