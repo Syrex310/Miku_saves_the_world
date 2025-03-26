@@ -7,6 +7,37 @@
 #include "save.cpp"
 using namespace std;
 
+extern Player player;
+string currencyText;
+int currency;
+TTF_Font* font = nullptr;
+
+void initializeGame() {
+    loadGame(currency);
+    if (TTF_Init() == -1) {
+        cout << "SDL_ttf could not initialize! SDL_ttf Error: " << TTF_GetError() << endl;
+        exit(1);
+    }
+
+    font = TTF_OpenFont("OpenSans-Italic-VariableFont_wdth,wght.ttf", 24);
+    if (!font) {
+        cout << "Failed to load font! SDL_ttf Error: " << TTF_GetError() << endl;
+        exit(1);
+    }
+}
+
+void renderCurrency(SDL_Renderer* renderer, int currency){
+    SDL_Color textColor = {255,255,0};
+    currencyText ="Currency: " + to_string(currency);
+    SDL_Surface* surface = TTF_RenderText_Solid(font, currencyText.c_str(), textColor);
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_Rect textRect = {10, 10, surface->w, surface->h};
+    SDL_RenderCopy(renderer, texture, NULL, &textRect);
+    SDL_FreeSurface(surface);
+    SDL_DestroyTexture(texture);
+}
+
+
 bool init(SDL_Window*& window, SDL_Renderer*& renderer) {
 
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
@@ -35,19 +66,24 @@ bool init(SDL_Window*& window, SDL_Renderer*& renderer) {
 }
 
 void close(SDL_Window* window, SDL_Renderer* renderer) {
+    if (font) {
+        TTF_CloseFont(font);
+        font = nullptr;
+    }
+    TTF_Quit();
+
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
 }
 
+
 void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
+    initializeGame();
     bool running = true;
     SDL_Event event;
     GameState gameState = MENU;
 
-    TTF_Font* font = TTF_OpenFont("OpenSans-Italic-VariableFont_wdth,wght.ttf", 24);
-
-    Player player = { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 50, 50, 3 };
     const int FPS = 60;
     const int frameDelay = 1000 / FPS; 
 
@@ -67,7 +103,7 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
         }
 
         if (gameState == MENU) {
-            renderMenu(renderer, font);
+            renderMenu(renderer, font, gameState);
         }
         else if (gameState == GAME) {
             frameStart = SDL_GetTicks();
@@ -99,6 +135,7 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
             renderEnemies(renderer);
             renderBullets(renderer);
             renderHealth(renderer, player);
+            renderCurrency(renderer, currency);
 
             SDL_RenderPresent(renderer);
 

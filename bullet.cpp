@@ -1,6 +1,8 @@
 #include "common.hpp"
 using namespace std;
 vector<Bullet> bullets;
+extern int currency;
+extern void saveGame(int currency);
 
 void Bullet::move() {
     x += speedX;
@@ -18,6 +20,7 @@ Uint32 lastShotTime = 0;
 void handleInput(SDL_Event& event, bool& running) {
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
+            saveGame(currency);
             running = false;
         }
     }

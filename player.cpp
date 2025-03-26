@@ -18,3 +18,5 @@ void renderHealth(SDL_Renderer* renderer, Player& player) {
     SDL_Rect healthBar = { 20, 20, player.health * 2, 10 };
     SDL_RenderFillRect(renderer, &healthBar);
 }
+
+Player player = { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 50, 50, 3 };

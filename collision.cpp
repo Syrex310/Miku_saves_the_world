@@ -1,5 +1,11 @@
 #include "common.hpp"
+extern int currency;
+extern void saveGame(int currency);
 
+void enemyDefeated(){
+    currency+=1;
+    saveGame(currency);
+}
 bool checkCollision(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2) {
     return x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && y1 + h1 > y2;
 }
@@ -14,7 +20,7 @@ void updateCollisions(Player& player, vector<Enemy>& enemies, vector<Bullet>& bu
             }
         }
     }
-    
+
     for (auto& bullet : bullets) {
         for (auto& enemy : enemies) {
             if (checkCollision(static_cast<int>(bullet.x), static_cast<int>(bullet.y), 5, 5, enemy.x, enemy.y, enemy.width, enemy.height)) {
@@ -23,9 +29,16 @@ void updateCollisions(Player& player, vector<Enemy>& enemies, vector<Bullet>& bu
             }
         }
     }
-    
+
+    for (auto& enemy : enemies) {
+        if (enemy.health <= 0) {
+            enemyDefeated();
+        }
+    }
+
     enemies.erase(remove_if(enemies.begin(), enemies.end(), [](Enemy& enemy) { return enemy.health <= 0; }), enemies.end());
     bullets.erase(remove_if(bullets.begin(), bullets.end(), [](Bullet& bullet) {
         return bullet.x < 0 || bullet.x > SCREEN_WIDTH || bullet.y < 0 || bullet.y > SCREEN_HEIGHT;
     }), bullets.end());
 }
+
