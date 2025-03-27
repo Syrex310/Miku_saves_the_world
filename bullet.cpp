@@ -27,7 +27,7 @@ void handleGameInput(SDL_Event& event, bool& running, GameState& gameState) {
         saveGame(currency, health);
         running = false;
     }
-    else if (event.type == SDL_KEYDOWN  && event.key.repeat == 0) {
+    if (event.type == SDL_KEYDOWN  && event.key.repeat == 0) {
         if (event.key.keysym.sym == SDLK_ESCAPE) {
             //cout<<"Game resumed / Game Paused";
             if (gameState == GAME) {
@@ -53,6 +53,11 @@ void handleGameInput(SDL_Event& event, bool& running, GameState& gameState) {
             }
         }
     }
+    if (gameState == DEAD){
+        if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_r){
+            restartGame();
+        }
+    }
     if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT)) isShooting = true;
     else isShooting = false;
 }
@@ -60,7 +65,8 @@ void handleGameInput(SDL_Event& event, bool& running, GameState& gameState) {
 
 void updateShooting(Player& player) {
     Uint32 currentTime = SDL_GetTicks();
-    if (isShooting && currentTime - lastShotTime >= 100){
+    int timeBetweenAttack = (currentTime - lastShotTime) * firerate;
+    if (isShooting && timeBetweenAttack >= 100){
         int mouseX, mouseY;
         SDL_GetMouseState(&mouseX, &mouseY);
         bullets.push_back(Bullet(player.x + player.width / 2, player.y + player.height / 2, mouseX, mouseY));

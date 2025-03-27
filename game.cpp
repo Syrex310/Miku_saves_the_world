@@ -9,10 +9,12 @@
 
 string currencyText;
 int currency;
-int health = 100;
+int health = 100, attack = 25, speed = 3, firerate = 1, critrate = 0;
+int currentWave = 0;
+bool waveActive = false;
 TTF_Font* font = nullptr;
-Player player = { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 40, 40, 3, health, health};
-
+Player player = { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 40, 40, speed, health, health};
+GameState gameState = MENU;
 
 void initializeGame() {
     loadGame(currency, health);
@@ -28,6 +30,15 @@ void initializeGame() {
     }
 }
 
+void restartGame() {
+    player = { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 40, 40, 3, health, health };
+    enemies.clear();
+    bullets.clear();
+    currentWave = 0;
+    waveActive = false;
+    gameState = MENU;
+}
+
 void renderCurrency(SDL_Renderer* renderer, int currency){
     SDL_Color textColor = {255,255,0};
     currencyText ="Currency: " + to_string(currency);
@@ -38,6 +49,16 @@ void renderCurrency(SDL_Renderer* renderer, int currency){
     SDL_FreeSurface(surface);
     SDL_DestroyTexture(texture);
 }
+void renderDeathScreen(SDL_Renderer* renderer, TTF_Font* font) {
+    SDL_Color textColor = {255, 0, 0}; 
+    SDL_Surface* surface = TTF_RenderText_Solid(font, "You Died! Press R to return to Menu", textColor);
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_Rect textRect = { SCREEN_WIDTH / 2 - surface->w / 2, SCREEN_HEIGHT / 2 - surface->h / 2, surface->w, surface->h };
+    SDL_RenderCopy(renderer, texture, NULL, &textRect);
+    SDL_FreeSurface(surface);
+    SDL_DestroyTexture(texture);
+}
+
 
 
 bool init(SDL_Window*& window, SDL_Renderer*& renderer) {
@@ -78,7 +99,6 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
 
     bool running = true;
     SDL_Event event;
-    GameState gameState = MENU;
 
     const int FPS = 60;
     const int frameDelay = 1000 / FPS; 
@@ -86,19 +106,17 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
     Uint32 frameStart;
     int frameTime;
 
-    int currentWave = 0;
     int maxWaves = 10;
-    bool waveActive = false;
     Uint32 lastWaveTime = SDL_GetTicks();
     int enemiesSpawned = 0;
     Uint32 lastEnemySpawnTime = SDL_GetTicks();
-
+    
     while (running) {
         while (SDL_PollEvent(&event)) {
             if (gameState == MENU || gameState == UPGRADES){
                 handleMenuInput(event, running, gameState);
             }
-            else if (gameState == GAME || gameState == PAUSED) {
+            else if (gameState == GAME || gameState == PAUSED || gameState == DEAD) {
                 handleGameInput(event, running, gameState);
             }
         }
@@ -109,9 +127,18 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
         else if (gameState == PAUSED){
             renderPauseMenu(renderer, font);
         }
+        else if (gameState == DEAD) {
+            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+            SDL_RenderClear(renderer);
+            renderDeathScreen(renderer, font);
+            SDL_RenderPresent(renderer);
+        }        
         else if (gameState == GAME) {
             frameStart = SDL_GetTicks();
-
+            
+            if (player.health<=0){
+                gameState = DEAD;
+            }
             updatePlayerMovement(player);
             updateShooting(player);
             updateCollisions(player, enemies, bullets);

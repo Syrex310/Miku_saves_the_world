@@ -38,42 +38,27 @@ void handleMenuInput(SDL_Event& event, bool& running, GameState& gameState) {
 
         //cout << "Mouse Clicked at: " << mouseX << ", " << mouseY << endl;
 
-        int buttonWidth = 200;
-        int buttonHeight = 50;
-        int centerX = (1600 - buttonWidth) / 2;
-        int centerY = (900 - buttonHeight) / 2;
-        int startY = 300;
-        int spacing = 100;
-
-        if (gameState == MENU) {  
-            if (mouseX > centerX && mouseX < centerX + buttonWidth) {  
-                if (mouseY > startY && mouseY < startY + buttonHeight) {
-                    gameState = GAME;
-                    cout << "Start Game clicked!" << endl;
-                }
-                if (mouseY > startY + spacing && mouseY < startY + spacing + buttonHeight) {
-                    gameState = UPGRADES;
-                    cout << "Upgrades clicked!" << endl;
-                }
-                if (mouseY > startY + spacing * 2 && mouseY < startY + spacing * 2 + buttonHeight) {
-                    running = false;
-                    cout << "Exit clicked!" << endl;
-                }
-            }
-        } 
+        if (gameState == MENU){
+            if (mouseX < 700 && mouseY > 100 && mouseY < 300) {gameState = GAME; cout<<"Start/Continue Game";}
+            else if (mouseX < 600 && mouseY > 325 && mouseY < 525) {gameState = UPGRADES; cout<<"Upgrade Menu Clicked";}
+            else if (mouseX < 500 && mouseY > 550 && mouseY < 750) {running = false; cout<<"Exit Game";}
+        }
         else if (gameState == UPGRADES) {  
-            if (mouseX > centerX && mouseX < centerX + buttonWidth) {  
-                if (mouseY > startY && mouseY < startY + buttonHeight) { 
-                    purchaseUpgrade(player);
-                    cout << "Upgrade clicked!" << endl;
+            if (mouseX > 50 && mouseX < 950){
+                if (mouseY > 50 && mouseY < 550){
+                    if (mouseX < 210) Upgrade(player, HEALTH);
+                    else if (mouseX > 235 && mouseX < 395) Upgrade(player, ATTACK);
+                    else if (mouseX > 420 && mouseX < 580) Upgrade(player, SPEED);
+                    else if (mouseX > 605 && mouseX < 765) Upgrade(player, FIRERATE);
+                    else if (mouseX > 790 && mouseX < 950) Upgrade(player, CRITRATE);
                 }
-                if (mouseY > startY + spacing && mouseY < startY + spacing + buttonHeight) { 
-                    gameState = MENU;
-                    cout << "Back clicked!" << endl;
-                }
+                cout << "Upgraded player stat"<<endl;
+            }
+            else if (mouseX > 1050 && mouseX < 1550 && mouseY > 600 && mouseY < 850){
+                gameState = MENU;
+                cout<<"Returned to MENU"<<endl;
             }
         }
-        
     }
 }
 

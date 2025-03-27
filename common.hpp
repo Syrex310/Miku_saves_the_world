@@ -6,13 +6,15 @@
 #include <vector>
 #include <cmath>
 #include <algorithm>
+#include <random>
 
 
 using namespace std;
 
 const int SCREEN_WIDTH = 1600;
 const int SCREEN_HEIGHT = 900;
-enum GameState { MENU, GAME, UPGRADES, PAUSED };
+enum GameState { MENU, GAME, UPGRADES, PAUSED, DEAD };
+enum UpgradeType { HEALTH, ATTACK, SPEED, FIRERATE, CRITRATE};
 
 struct Player {
     int x, y;
@@ -59,9 +61,10 @@ void renderText(SDL_Renderer* renderer, TTF_Font* font, const char* text, int x,
 
 extern Player player;
 extern int currency;
-extern int health;
+extern int health, attack, speed, firerate, critrate;
 extern void saveGame(int currency, int health);
 extern void loadGame(int &currency, int &health);
-extern void purchaseUpgrade(Player& player);
+extern void Upgrade(Player& player, UpgradeType type);
+extern void restartGame();
 extern vector<Bullet> bullets;
 extern vector<Enemy> enemies;
