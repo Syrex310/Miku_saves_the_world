@@ -14,6 +14,7 @@ int currentWave = 0;
 bool waveActive = false;
 TTF_Font* font = nullptr;
 Player player = { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 40, 40, speed, health, health};
+Enemy enemy;
 GameState gameState = MENU;
 
 void initializeGame() {
@@ -116,7 +117,7 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
             if (gameState == MENU || gameState == UPGRADES){
                 handleMenuInput(event, running, gameState);
             }
-            else if (gameState == GAME || gameState == PAUSED || gameState == DEAD) {
+            else if (gameState == GAME || gameState == PAUSED || gameState == DEAD || gameState == WON) {
                 handleGameInput(event, running, gameState);
             }
         }

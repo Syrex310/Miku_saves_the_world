@@ -23,7 +23,6 @@ void renderEnemies(SDL_Renderer* renderer) {
 }
 void spawnEnemy(int currentWave) {
     const int SAFE_ZONE_RADIUS = 200;
-    Enemy enemy;
     bool tooClose;
 
     do {
@@ -39,14 +38,32 @@ void spawnEnemy(int currentWave) {
 
     enemy.width = 40;
     enemy.height = 40;
-    enemy.speed = 2 + (0.2 * currentWave);
+    enemy.speed = 3 + (0.2 * currentWave);
     enemy.health += (10 * currentWave);
 
     enemies.push_back(enemy);
 }
+void spawnBoss(){
+    enemy.width += 60;
+    enemy.height += 60;
+    enemy.speed = 0;
+    enemy.health = 10000;
+    enemies.push_back(enemy);
+
+    //change back to normal enemies
+    enemy.width -= 60;
+    enemy. height -= 60;
+    enemy.speed = 5;
+    enemy.health = 150;
+}
 
 void spawnWaves(int &currentWave, int maxWaves, bool &waveActive, Uint32 &lastWaveTime, int &enemiesSpawned, Uint32 &lastEnemySpawnTime) {
-    if (currentWave >= maxWaves) return;
+    bool bossActive = false;
+    if (currentWave >= maxWaves){
+        bossActive = false;
+        gameState = WON;
+        return;
+    }
 
     Uint32 currentTime = SDL_GetTicks();
     
@@ -57,6 +74,10 @@ void spawnWaves(int &currentWave, int maxWaves, bool &waveActive, Uint32 &lastWa
         lastWaveTime = currentTime;
         enemiesSpawned = 0;
         Time_interval-=50;
+        if (currentWave == 10 && bossActive == false){
+            bossActive = true;
+            spawnBoss();
+        }
 
         
         cout << "Wave " << currentWave << " started with " << 3*pow(currentWave,2) << " enemies!" << endl;

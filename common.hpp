@@ -13,7 +13,7 @@ using namespace std;
 
 const int SCREEN_WIDTH = 1600;
 const int SCREEN_HEIGHT = 900;
-enum GameState { MENU, GAME, UPGRADES, PAUSED, DEAD };
+enum GameState { MENU, GAME, UPGRADES, PAUSED, DEAD, WON};
 enum UpgradeType { HEALTH, ATTACK, SPEED, FIRERATE, CRITRATE};
 
 struct Player {
@@ -32,6 +32,7 @@ struct Enemy {
     int health = 50;
     void moveTowardPlayer(Player& player);
 };
+
 
 struct Bullet {
     float x, y;
@@ -60,11 +61,14 @@ void updateCollisions(Player& player, vector<Enemy>& enemies, vector<Bullet>& bu
 void renderText(SDL_Renderer* renderer, TTF_Font* font, const char* text, int x, int y);
 
 extern Player player;
+extern Enemy enemy;
 extern int currency;
 extern int health, attack, speed, firerate, critrate;
+extern int HP_stage, ATK_stage, SPEED_stage, FR_stage, CR_stage;
 extern void saveGame(int currency, int health);
 extern void loadGame(int &currency, int &health);
 extern void Upgrade(Player& player, UpgradeType type);
 extern void restartGame();
 extern vector<Bullet> bullets;
 extern vector<Enemy> enemies;
+extern GameState gameState;

@@ -59,6 +59,9 @@ void handleMenuInput(SDL_Event& event, bool& running, GameState& gameState) {
                 cout<<"Returned to MENU"<<endl;
             }
         }
+        else if (gameState == WON){
+            gameState = MENU;
+        }
     }
 }
 

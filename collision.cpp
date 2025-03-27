@@ -23,7 +23,7 @@ void updateCollisions(Player& player, vector<Enemy>& enemies, vector<Bullet>& bu
     for (auto& enemy : enemies) {
         if (checkCollision(player.x, player.y, player.width, player.height, enemy.x, enemy.y, enemy.width, enemy.height)) {
             Uint32 currentTime = SDL_GetTicks();
-            if (currentTime - player.lastDamageTime >= 999) {
+            if (currentTime - player.lastDamageTime >= 500) {
                 player.health -= 10;
                 player.lastDamageTime = currentTime;
             }
