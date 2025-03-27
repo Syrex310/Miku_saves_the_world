@@ -5,7 +5,7 @@
 #include <fstream>
 
 using namespace std;
-int HP_upCost = 50, ATK_upCost = 100, SPEED_upCost = 50, FR_upCost = 100, CR_upCost = 500; 
+int HP_upCost = 50, ATK_upCost = 100, SPEED_upCost = 250, FR_upCost = 150, CR_upCost = 300; 
 int HP_stage = 1, ATK_stage = 1, SPEED_stage = 1, FR_stage = 1, CR_stage = 1;
 
 void saveGame(int currency, int health) {
@@ -39,8 +39,6 @@ void loadGame(int& currency, int& health) {
             HP_stage = 1; ATK_stage = 1; SPEED_stage = 1; FR_stage = 1; CR_stage = 1;
         } else {
             saveFile >> currency >> health >> attack >> speed >> firerate >> critrate >> HP_stage >> ATK_stage >> SPEED_stage >> FR_stage >> CR_stage;
-            player.health=health;
-            player.maxhealth=health;
             cout << "Game loaded!" << endl;
         }
         saveFile.close();
@@ -50,16 +48,17 @@ void loadGame(int& currency, int& health) {
         health = 100; attack = 25; speed = 3; firerate = 1; critrate = 0;
         HP_stage = 1; ATK_stage = 1; SPEED_stage = 1; FR_stage = 1; CR_stage = 1;
     }
+    player.health=health;
+    player.maxhealth=health;
 }
 
 void Upgrade(Player& player, UpgradeType type){
     switch (type){
         case HEALTH:
             if (currency >= HP_upCost * HP_stage) {
-                health += 10 * HP_stage;
+                health += 10;
                 currency -= HP_upCost * HP_stage;
                 saveGame(currency, health);
-
                 cout << "Upgrade purchased! Health increased by 10, remaining currency: " << currency << endl;
             } else {
                 cout << "Not enough currency for upgrade!" << endl;
@@ -67,6 +66,7 @@ void Upgrade(Player& player, UpgradeType type){
             break;
         case ATTACK:
             if (currency >= ATK_upCost * ATK_stage) {
+                
                 attack += 15;
                 currency -= ATK_upCost * ATK_stage;
                 saveGame(currency, health);
@@ -100,8 +100,13 @@ void Upgrade(Player& player, UpgradeType type){
             break;
         case CRITRATE:
             if (currency >= CR_upCost * CR_stage) {
+                if (CR_stage >= 10){
+                    cout << "Crit rate already maxed!";
+                    break;
+                }
                 critrate += 10;
                 currency -= CR_upCost * CR_stage;
+                CR_stage += 1;
                 saveGame(currency, health);
 
                 cout << "Upgrade purchased! Crit rate increased by 10, remaining currency: " << currency << endl;
@@ -109,7 +114,6 @@ void Upgrade(Player& player, UpgradeType type){
                 cout << "Not enough currency for upgrade!" << endl;
             }
             break;
-            
     }
     saveGame(currency, health);
 }
