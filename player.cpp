@@ -1,10 +1,11 @@
 #include "common.hpp"
 
+bool movingLeft = true;
 void updatePlayerMovement(Player& player) {
     const Uint8* keystate = SDL_GetKeyboardState(NULL);
     int dx = 0, dy = 0;
-    if (keystate[SDL_SCANCODE_A]) dx = -1;
-    if (keystate[SDL_SCANCODE_D]) dx = 1;
+    if (keystate[SDL_SCANCODE_A]) {dx = -1; movingLeft = true;}
+    if (keystate[SDL_SCANCODE_D]) {dx = 1; movingLeft = false;}
     if (keystate[SDL_SCANCODE_W]) dy = -1;
     if (keystate[SDL_SCANCODE_S]) dy = 1;
     if (dx != 0 && dy != 0) {
@@ -18,10 +19,18 @@ void updatePlayerMovement(Player& player) {
 }
 
 void renderPlayer(SDL_Renderer* renderer, Player& player) {
-    //SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); 
+    /*
     SDL_Rect rect = { player.x, player.y, player.width, player.height };
     SDL_RenderCopy(renderer, playerTexture, NULL, &rect);
-    //SDL_RenderFillRect(renderer, &rect);
+    */
+    SDL_Rect play = {player.x, player.y, player.width, player.height};
+    if (!movingLeft){
+        SDL_RenderCopy(renderer, player1, NULL, &play);
+    }
+    else{
+        SDL_RenderCopy(renderer, player2, NULL, &play);
+    }
+
 }
 void renderRemainHealth(SDL_Renderer* renderer, Player& player) {
     SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);

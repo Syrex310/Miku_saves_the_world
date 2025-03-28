@@ -58,6 +58,10 @@ struct Bullet {
     void move();
 };
 
+strucr gun {
+    float
+}
+
 bool checkCollision(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 void updateCollisions(Player& player, vector<Enemy>& enemies, vector<Bullet>& bullets);
 void renderText(SDL_Renderer* renderer, TTF_Font* font, const char* text, int x1, int y1, int x2, int y2, SDL_Color textColor);
@@ -77,7 +81,7 @@ extern void restartGame();
 extern vector<Bullet> bullets;
 extern vector<Enemy> enemies;
 extern GameState gameState;
-extern SDL_Texture *playerTexture, *enemyTexture, *menu1, *menu2, *menu3, *bullet2, *ingame;
+extern SDL_Texture *playerTexture, *enemyTexture, *menu1, *menu2, *menu3, *bullet2, *ingame, *player1, *player2;
 extern TTF_Font *font24, *font50;
 extern SDL_Color white, black, blue1;
 extern bool checkWave;

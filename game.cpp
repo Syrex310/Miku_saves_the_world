@@ -14,12 +14,12 @@ int health = 100, attack = 25, speed = 3, firerate = 1, critrate = 0;
 int currentWave = 0;
 bool waveActive = false;
 TTF_Font *font24 = nullptr, *font50 = nullptr;
-Player player = { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 40, 40, speed, health, health};
+Player player = { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 25, 48, speed, health, health};
 Enemy enemy;
 GameState gameState = MENU;
 SDL_Texture* playerTexture = nullptr;
 SDL_Texture* enemyTexture = nullptr;
-SDL_Texture* menu1 = nullptr, *menu2 = nullptr, *menu3 = nullptr, *bullet2 = nullptr, *ingame = nullptr;
+SDL_Texture* menu1 = nullptr, *menu2 = nullptr, *menu3 = nullptr, *bullet2 = nullptr, *ingame = nullptr, *player1 = nullptr, *player2 = nullptr;
 SDL_Color black = {0, 0, 0}, white = {255, 255, 255}, blue1 = {109, 198, 254};
 bool checkWave = false;
 
@@ -60,6 +60,8 @@ void initializeGame(SDL_Renderer* renderer) {
     menu3 = LoadTexture("menu3.png", renderer);
     bullet2 = LoadTexture("bullet2.png", renderer);
     ingame = LoadTexture("ingame.png", renderer);
+    player1 = LoadTexture("player1.png", renderer);
+    player2 = LoadTexture("player2.png", renderer);
     loadGifFrames(renderer);
 }
 
@@ -72,6 +74,8 @@ void restartGame() {
     waveActive = false;
     enemy.health = 50;
     enemy.speed = 3;
+    player.health = player.maxhealth;
+    checkWave = false;
     gameState = MENU;
 }
 
@@ -199,7 +203,7 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
                 return bullet.x < 0 || bullet.x > SCREEN_WIDTH || bullet.y < 0 || bullet.y > SCREEN_HEIGHT;
             }), bullets.end());        
 
-            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); 
+            SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255); 
             SDL_RenderClear(renderer);
 
             renderHealth(renderer, player);
