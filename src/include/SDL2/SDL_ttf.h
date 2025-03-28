@@ -2022,11 +2022,11 @@ extern DECLSPEC SDL_Surface * SDLCALL TTF_RenderGlyph32_LCD(TTF_Font *font,
 
 /* For compatibility with previous versions, here are the old functions */
 #define TTF_RenderText(font, text, fg, bg)  \
-    TTF_RenderText_Shaded(font, text, fg, bg)
+    TTF_RenderText_Shaded(font24, text, fg, bg)
 #define TTF_RenderUTF8(font, text, fg, bg)  \
-    TTF_RenderUTF8_Shaded(font, text, fg, bg)
+    TTF_RenderUTF8_Shaded(font24, text, fg, bg)
 #define TTF_RenderUNICODE(font, text, fg, bg)   \
-    TTF_RenderUNICODE_Shaded(font, text, fg, bg)
+    TTF_RenderUNICODE_Shaded(font24, text, fg, bg)
 
 /**
  * Dispose of a previously-created font.

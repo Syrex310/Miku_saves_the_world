@@ -8,6 +8,7 @@
 #include <cmath>
 #include <algorithm>
 #include <random>
+#include <string>
 
 
 using namespace std;
@@ -30,7 +31,7 @@ struct Enemy {
     int x, y;
     int width, height;
     int speed;
-    int health = 50;
+    int health;
     void moveTowardPlayer(Player& player);
 };
 
@@ -59,18 +60,24 @@ struct Bullet {
 
 bool checkCollision(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 void updateCollisions(Player& player, vector<Enemy>& enemies, vector<Bullet>& bullets);
-void renderText(SDL_Renderer* renderer, TTF_Font* font, const char* text, int x, int y);
+void renderText(SDL_Renderer* renderer, TTF_Font* font, const char* text, int x1, int y1, int x2, int y2, SDL_Color textColor);
 
 extern Player player;
 extern Enemy enemy;
 extern int currency;
 extern int health, attack, speed, firerate, critrate;
 extern int HP_stage, ATK_stage, SPEED_stage, FR_stage, CR_stage;
-extern void saveGame(int currency, int health);
+extern int currentWave;
+extern void saveGame();
 extern void loadGame(int &currency, int &health);
 extern void Upgrade(Player& player, UpgradeType type);
+extern void renderGif(SDL_Renderer* renderer);
+extern SDL_Texture* LoadTexture(const char* file, SDL_Renderer* renderer);
 extern void restartGame();
 extern vector<Bullet> bullets;
 extern vector<Enemy> enemies;
 extern GameState gameState;
-extern SDL_Texture *playerTexture, *enemyTexture, *menu1, *menu2;
+extern SDL_Texture *playerTexture, *enemyTexture, *menu1, *menu2, *menu3, *bullet2, *ingame;
+extern TTF_Font *font24, *font50;
+extern SDL_Color white, black, blue1;
+extern bool checkWave;

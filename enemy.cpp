@@ -3,8 +3,8 @@ vector<Enemy> enemies;
 
 
 void Enemy::moveTowardPlayer(Player& player) {
-    int dx = player.x - x;
-    int dy = player.y - y;
+    int dx = (player.x + player.width / 2) - (x + width / 2);
+    int dy = (player.y + player.height / 2) - (y + height / 2);
     float length = sqrt(dx * dx + dy * dy);
     if (length != 0) {
         float normalizedX = dx / length;
@@ -39,26 +39,28 @@ void spawnEnemy(int currentWave) {
 
     enemy.width = 40;
     enemy.height = 40;
-    enemy.speed = 3 + (0.2 * currentWave);
-    enemy.health += (10 * currentWave);
+    enemy.speed = 2 + (currentWave / 3);
+    enemy.health = 50 + (25 * currentWave);
 
     enemies.push_back(enemy);
 }
-void spawnBoss(){
-    enemy.width += 60;
-    enemy.height += 60;
-    enemy.speed = 0;
-    enemy.health = 10000;
+void spawnBoss(int currentWave){
+    enemy.width += 160;
+    enemy.height += 160;
+    enemy.health *= (50 * currentWave);
+    enemy.speed -= 1;
     enemies.push_back(enemy);
 
     //change back to normal enemies
-    enemy.width -= 60;
-    enemy. height -= 60;
-    enemy.speed = 5;
-    enemy.health = 150;
+    enemy.width -= 160;
+    enemy.height -= 160;
+    enemy.health = 50 + (25 * currentWave);
+    enemy.speed += 1;
 }
 
-void spawnWaves(int &currentWave, int maxWaves, bool &waveActive, Uint32 &lastWaveTime, int &enemiesSpawned, Uint32 &lastEnemySpawnTime) {
+
+
+void spawnWaves(SDL_Renderer *renderer, int &currentWave, int maxWaves, bool &waveActive, Uint32 &lastWaveTime, int &enemiesSpawned, Uint32 &lastEnemySpawnTime) {
     bool bossActive = false;
     if (currentWave >= maxWaves){
         bossActive = false;
@@ -70,17 +72,17 @@ void spawnWaves(int &currentWave, int maxWaves, bool &waveActive, Uint32 &lastWa
     
     int Time_interval=1000;
     if (enemies.empty() && !waveActive && (currentTime - lastWaveTime >= 5000)) {
+        checkWave = false;
         currentWave++;
         waveActive = true;
         lastWaveTime = currentTime;
         enemiesSpawned = 0;
         Time_interval-=50;
-        if (currentWave == 10 && bossActive == false){
+        if (currentWave == 6) bossActive = false;
+        if ((currentWave == 5 || currentWave == 10) && bossActive == false){
             bossActive = true;
-            spawnBoss();
+            spawnBoss(currentWave);
         }
-
-        
         cout << "Wave " << currentWave << " started with " << 3*pow(currentWave,2) << " enemies!" << endl;
     }
     int totalEnemies = 3*pow(currentWave,2);
@@ -93,5 +95,8 @@ void spawnWaves(int &currentWave, int maxWaves, bool &waveActive, Uint32 &lastWa
     if (enemiesSpawned >= totalEnemies && !enemies.empty()) {
         lastWaveTime=currentTime;
         waveActive = false;
+    }
+    else if (enemiesSpawned >= totalEnemies && enemies.empty()){
+        checkWave = true;
     }
 }

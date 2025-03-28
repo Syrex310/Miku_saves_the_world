@@ -5,6 +5,7 @@
 #include "collision.cpp"
 #include "bullet.cpp"
 #include "menu.cpp"
+#include "gif.cpp"
 
 
 string currencyText;
@@ -12,16 +13,15 @@ int currency;
 int health = 100, attack = 25, speed = 3, firerate = 1, critrate = 0;
 int currentWave = 0;
 bool waveActive = false;
-TTF_Font* font = nullptr;
+TTF_Font *font24 = nullptr, *font50 = nullptr;
 Player player = { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 40, 40, speed, health, health};
 Enemy enemy;
 GameState gameState = MENU;
 SDL_Texture* playerTexture = nullptr;
 SDL_Texture* enemyTexture = nullptr;
-SDL_Texture* menu1 = nullptr;
-SDL_Texture* menu2 = nullptr;
-
-
+SDL_Texture* menu1 = nullptr, *menu2 = nullptr, *menu3 = nullptr, *bullet2 = nullptr, *ingame = nullptr;
+SDL_Color black = {0, 0, 0}, white = {255, 255, 255}, blue1 = {109, 198, 254};
+bool checkWave = false;
 
 
 SDL_Texture* LoadTexture(const char* file, SDL_Renderer* renderer) {
@@ -43,8 +43,13 @@ void initializeGame(SDL_Renderer* renderer) {
         exit(1);
     }
 
-    font = TTF_OpenFont("OpenSans-Italic-VariableFont_wdth,wght.ttf", 24);
-    if (!font) {
+    font24 = TTF_OpenFont("VCR_OSD_MONO_1.001.ttf", 24);
+    font50 = TTF_OpenFont("VCR_OSD_MONO_1.001.ttf", 50);
+    if (!font24) {
+        cout << "Failed to load font! SDL_ttf Error: " << TTF_GetError() << endl;
+        exit(1);
+    }
+    if (!font50) {
         cout << "Failed to load font! SDL_ttf Error: " << TTF_GetError() << endl;
         exit(1);
     }
@@ -52,6 +57,10 @@ void initializeGame(SDL_Renderer* renderer) {
     enemyTexture = LoadTexture("enemy.png", renderer);
     menu1 = LoadTexture("menu1.png", renderer);
     menu2= LoadTexture("menu2.png", renderer);
+    menu3 = LoadTexture("menu3.png", renderer);
+    bullet2 = LoadTexture("bullet2.png", renderer);
+    ingame = LoadTexture("ingame.png", renderer);
+    loadGifFrames(renderer);
 }
 
 
@@ -61,13 +70,15 @@ void restartGame() {
     bullets.clear();
     currentWave = 0;
     waveActive = false;
+    enemy.health = 50;
+    enemy.speed = 3;
     gameState = MENU;
 }
 
 void renderCurrency(SDL_Renderer* renderer, int currency){
     SDL_Color textColor = {255,255,0};
     currencyText ="Currency: " + to_string(currency);
-    SDL_Surface* surface = TTF_RenderText_Solid(font, currencyText.c_str(), textColor);
+    SDL_Surface* surface = TTF_RenderText_Solid(font50, currencyText.c_str(), textColor);
     SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_Rect textRect = {SCREEN_WIDTH - surface->w - 10,10, surface->w, surface->h};
     SDL_RenderCopy(renderer, texture, NULL, &textRect);
@@ -112,9 +123,11 @@ bool init(SDL_Window*& window, SDL_Renderer*& renderer) {
 }
 
 void close(SDL_Window* window, SDL_Renderer* renderer) {
-    if (font) {
-        TTF_CloseFont(font);
-        font = nullptr;
+    if (font24) {
+        TTF_CloseFont(font24);
+        TTF_CloseFont(font50);
+        
+        font24 = nullptr;
     }
     TTF_Quit();
     IMG_Quit();
@@ -139,7 +152,6 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
     Uint32 lastWaveTime = SDL_GetTicks();
     int enemiesSpawned = 0;
     Uint32 lastEnemySpawnTime = SDL_GetTicks();
-    
     while (running) {
         while (SDL_PollEvent(&event)) {
             if (gameState == MENU || gameState == UPGRADES){
@@ -151,16 +163,20 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
         }
 
         if (gameState == MENU || gameState == UPGRADES) {
-            //renderBackground(renderer);
-            renderMenu(renderer, font, gameState);
+            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+            SDL_RenderClear(renderer);
+            renderGif(renderer);
+            renderMenu(renderer, font24, gameState);
+            SDL_RenderPresent(renderer);
         }
         else if (gameState == PAUSED){
-            renderPauseMenu(renderer, font);
+            renderPauseMenu(renderer, font24);
+            SDL_RenderPresent(renderer);
         }
         else if (gameState == DEAD) {
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
             SDL_RenderClear(renderer);
-            renderDeathScreen(renderer, font);
+            renderDeathScreen(renderer, font24);
             SDL_RenderPresent(renderer);
         }        
         else if (gameState == GAME) {
@@ -172,7 +188,7 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
             updatePlayerMovement(player);
             updateShooting(player);
             updateCollisions(player, enemies, bullets);
-            spawnWaves(currentWave, maxWaves, waveActive, lastWaveTime, enemiesSpawned, lastEnemySpawnTime);
+            spawnWaves(renderer, currentWave, maxWaves, waveActive, lastWaveTime, enemiesSpawned, lastEnemySpawnTime);
             for (auto& enemy : enemies) {
                 enemy.moveTowardPlayer(player);
             }
@@ -185,13 +201,17 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
 
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); 
             SDL_RenderClear(renderer);
-            
+
+            renderHealth(renderer, player);
+            renderRemainHealth(renderer,player);
+            renderIngame(renderer);
             renderPlayer(renderer, player);
             renderEnemies(renderer);
             renderBullets(renderer);
-            renderHealth(renderer, player);
-            renderRemainHealth(renderer,player);
             renderCurrency(renderer, currency);
+            if (checkWave == true){
+                renderText(renderer, font50, ("Wave " + to_string(currentWave + 1) + " has started").c_str(), 800, 200, 800, 200, white);
+            }
 
             SDL_RenderPresent(renderer);
 

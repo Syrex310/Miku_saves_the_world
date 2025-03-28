@@ -7,8 +7,8 @@ void Bullet::move() {
 void renderBullets(SDL_Renderer* renderer) {
     SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255); 
     for (auto& bullet : bullets) {
-        SDL_Rect rect = { static_cast<int>(bullet.x), static_cast<int>(bullet.y), 15,15 }; 
-        SDL_RenderFillRect(renderer, &rect);
+        SDL_Rect bull = { static_cast<int>(bullet.x), static_cast<int>(bullet.y), 15,15 };
+        SDL_RenderCopy(renderer, bullet2, NULL, &bull);
     }
 }
 bool isShooting = false;
@@ -24,14 +24,14 @@ void handleGameInput(SDL_Event& event, bool& running, GameState& gameState) {
     int spacing = 100;
 
     if (event.type == SDL_QUIT) {
-        saveGame(currency, health);
+        saveGame();
         running = false;
     }
     if (event.type == SDL_KEYDOWN  && event.key.repeat == 0) {
         if (event.key.keysym.sym == SDLK_ESCAPE) {
             //cout<<"Game resumed / Game Paused";
             if (gameState == GAME) {
-                saveGame(currency, health);
+                saveGame();
                 gameState = PAUSED;
             } 
             else if (gameState == PAUSED) {
@@ -48,7 +48,7 @@ void handleGameInput(SDL_Event& event, bool& running, GameState& gameState) {
                 gameState = MENU;
             }
             if (mouseY > centerY + 160 && mouseY < centerY + 220) {
-                saveGame(currency, health);
+                saveGame();
                 running = false;
             }
         }
@@ -66,7 +66,7 @@ void handleGameInput(SDL_Event& event, bool& running, GameState& gameState) {
 void updateShooting(Player& player) {
     Uint32 currentTime = SDL_GetTicks();
     int timeBetweenAttack = (currentTime - lastShotTime) * firerate;
-    if (isShooting && timeBetweenAttack >= 100){
+    if (isShooting && timeBetweenAttack >= 250){
         int mouseX, mouseY;
         SDL_GetMouseState(&mouseX, &mouseY);
         bullets.push_back(Bullet(player.x + player.width / 2, player.y + player.height / 2, mouseX, mouseY));
