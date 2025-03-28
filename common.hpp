@@ -1,5 +1,6 @@
 #pragma once
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 #include <iostream>
 #include <fstream>
@@ -72,3 +73,4 @@ extern void restartGame();
 extern vector<Bullet> bullets;
 extern vector<Enemy> enemies;
 extern GameState gameState;
+extern SDL_Texture *playerTexture, *enemyTexture, *menu1, *menu2;

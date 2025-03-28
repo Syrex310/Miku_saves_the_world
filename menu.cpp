@@ -39,9 +39,9 @@ void handleMenuInput(SDL_Event& event, bool& running, GameState& gameState) {
         //cout << "Mouse Clicked at: " << mouseX << ", " << mouseY << endl;
 
         if (gameState == MENU){
-            if (mouseX < 700 && mouseY > 100 && mouseY < 300) {gameState = GAME; cout<<"Start/Continue Game";}
-            else if (mouseX < 600 && mouseY > 325 && mouseY < 525) {gameState = UPGRADES; cout<<"Upgrade Menu Clicked";}
-            else if (mouseX < 500 && mouseY > 550 && mouseY < 750) {running = false; cout<<"Exit Game";}
+            if (mouseX < 700 && mouseY > 100 && mouseY < 300) {gameState = GAME; cout<<"Start/Continue Game"<<endl;}
+            else if (mouseX < 600 && mouseY > 325 && mouseY < 525) {gameState = UPGRADES; cout<<"Upgrade Menu Clicked"<<endl;}
+            else if (mouseX < 500 && mouseY > 550 && mouseY < 750) {running = false; cout<<"Exit Game"<<endl;}
         }
         else if (gameState == UPGRADES) {  
             if (mouseX > 50 && mouseX < 950){
@@ -52,7 +52,6 @@ void handleMenuInput(SDL_Event& event, bool& running, GameState& gameState) {
                     else if (mouseX > 605 && mouseX < 765) Upgrade(player, FIRERATE);
                     else if (mouseX > 790 && mouseX < 950) Upgrade(player, CRITRATE);
                 }
-                cout << "Upgraded player stat"<<endl;
             }
             else if (mouseX > 1050 && mouseX < 1550 && mouseY > 600 && mouseY < 850){
                 gameState = MENU;
@@ -77,30 +76,12 @@ void renderMenu(SDL_Renderer* renderer, TTF_Font* font, GameState gameState) {
     int spacing = 100;
 
     if (gameState == MENU) {
-        SDL_Rect startButton = {centerX, startY, buttonWidth, buttonHeight};
-        SDL_Rect upgradesButton = {centerX, startY + spacing, buttonWidth, buttonHeight};
-        SDL_Rect exitButton = {centerX, startY + spacing * 2, buttonWidth, buttonHeight};
-
-        SDL_RenderFillRect(renderer, &startButton);
-        SDL_RenderFillRect(renderer, &upgradesButton);
-        SDL_RenderFillRect(renderer, &exitButton);
-
-        renderText(renderer, font, "Start Game", centerX + 50, startY + 15);
-        renderText(renderer, font, "Upgrades", centerX + 60, startY + spacing + 15);
-        renderText(renderer, font, "Exit", centerX + 85, startY + spacing * 2 + 15);
+        SDL_Rect rect = {0, 0, 1600, 900};
+        SDL_RenderCopy(renderer, menu1, NULL, &rect);
     } 
     else if (gameState == UPGRADES) {
-        SDL_Rect upgradeButton = {centerX, startY, buttonWidth, buttonHeight};
-        SDL_Rect backButton = {centerX, startY + spacing, buttonWidth, buttonHeight};
-
-        SDL_RenderFillRect(renderer, &upgradeButton);
-        SDL_RenderFillRect(renderer, &backButton);
-        string currencyDisplay = "Currency: " + to_string(currency);
-        renderText(renderer, font, currencyDisplay.c_str(), centerX + 50, startY - 50);
-
-
-        renderText(renderer, font, "Buy Upgrade (50)", centerX + 20, startY + 15);
-        renderText(renderer, font, "Back", centerX + 85, startY + spacing + 15);
+        SDL_Rect rect = {0, 0, 1600, 900};
+        SDL_RenderCopy(renderer, menu2, NULL, &rect);
     }
 
     SDL_RenderPresent(renderer);

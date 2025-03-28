@@ -15,10 +15,11 @@ void Enemy::moveTowardPlayer(Player& player) {
 }
 
 void renderEnemies(SDL_Renderer* renderer) {
-    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+    //SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
     for (auto& enemy : enemies) {
         SDL_Rect rect = { enemy.x, enemy.y, enemy.width, enemy.height };
-        SDL_RenderFillRect(renderer, &rect);
+        SDL_RenderCopy(renderer, enemyTexture, NULL, &rect);
+        //SDL_RenderFillRect(renderer, &rect);
     }
 }
 void spawnEnemy(int currentWave) {

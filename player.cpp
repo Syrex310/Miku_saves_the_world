@@ -9,9 +9,10 @@ void updatePlayerMovement(Player& player) {
     if (keystate[SDL_SCANCODE_S]) player.y += player.speed;
 }
 void renderPlayer(SDL_Renderer* renderer, Player& player) {
-    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); 
+    //SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); 
     SDL_Rect rect = { player.x, player.y, player.width, player.height };
-    SDL_RenderFillRect(renderer, &rect);
+    SDL_RenderCopy(renderer, playerTexture, NULL, &rect);
+    //SDL_RenderFillRect(renderer, &rect);
 }
 void renderRemainHealth(SDL_Renderer* renderer, Player& player) {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);

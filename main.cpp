@@ -7,7 +7,7 @@ int main(int argc, char* args[]) {
     if (!init(window, renderer)) {
         return -1;
     }
-    initializeGame();
+    initializeGame(renderer);
     gameLoop(window, renderer);
     close(window, renderer);
     return 0;

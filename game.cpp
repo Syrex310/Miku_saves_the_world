@@ -16,8 +16,27 @@ TTF_Font* font = nullptr;
 Player player = { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 40, 40, speed, health, health};
 Enemy enemy;
 GameState gameState = MENU;
+SDL_Texture* playerTexture = nullptr;
+SDL_Texture* enemyTexture = nullptr;
+SDL_Texture* menu1 = nullptr;
+SDL_Texture* menu2 = nullptr;
 
-void initializeGame() {
+
+
+
+SDL_Texture* LoadTexture(const char* file, SDL_Renderer* renderer) {
+    SDL_Texture* texture = nullptr;
+    SDL_Surface* surface = IMG_Load(file);
+    if (!surface) {
+        cout << "Failed to load image: " << IMG_GetError() << endl;
+        return nullptr;
+    }
+    texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_FreeSurface(surface);
+    return texture;
+}
+
+void initializeGame(SDL_Renderer* renderer) {
     loadGame(currency, health);
     if (TTF_Init() == -1) {
         cout << "SDL_ttf could not initialize! SDL_ttf Error: " << TTF_GetError() << endl;
@@ -29,7 +48,12 @@ void initializeGame() {
         cout << "Failed to load font! SDL_ttf Error: " << TTF_GetError() << endl;
         exit(1);
     }
+    playerTexture = LoadTexture("player.png", renderer);
+    enemyTexture = LoadTexture("enemy.png", renderer);
+    menu1 = LoadTexture("menu1.png", renderer);
+    menu2= LoadTexture("menu2.png", renderer);
 }
+
 
 void restartGame() {
     player = { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 40, 40, 3, health, health };
@@ -68,6 +92,10 @@ bool init(SDL_Window*& window, SDL_Renderer*& renderer) {
         cout << "SDL could not initialize! SDL_Error: " << SDL_GetError() << endl;
         return false;
     }
+    if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
+        cout << "SDL_image could not initialize! SDL_image Error: " << IMG_GetError() << endl;
+        return false;
+    }
     window = SDL_CreateWindow("SDL Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if (!window) {
         cout << "Window could not be created! SDL_Error: " << SDL_GetError() << endl;
@@ -89,7 +117,7 @@ void close(SDL_Window* window, SDL_Renderer* renderer) {
         font = nullptr;
     }
     TTF_Quit();
-
+    IMG_Quit();
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
@@ -123,6 +151,7 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
         }
 
         if (gameState == MENU || gameState == UPGRADES) {
+            //renderBackground(renderer);
             renderMenu(renderer, font, gameState);
         }
         else if (gameState == PAUSED){
