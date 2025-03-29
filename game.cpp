@@ -20,9 +20,10 @@ Enemy enemy;
 GameState gameState = MENU;
 SDL_Texture* playerTexture = nullptr;
 SDL_Texture* enemyTexture = nullptr;
-SDL_Texture* menu1 = nullptr, *menu2 = nullptr, *menu3 = nullptr, *bullet2 = nullptr, *ingame = nullptr, *player1 = nullptr, *player2 = nullptr, *gun = nullptr;
+SDL_Texture* menu1 = nullptr, *menu2 = nullptr, *menu3 = nullptr, *bullet2 = nullptr, *ingame = nullptr, *player1 = nullptr, *player2 = nullptr, *gun = nullptr, *backG = nullptr;
 SDL_Color black = {0, 0, 0}, white = {255, 255, 255}, blue1 = {109, 198, 254};
 bool checkWave = false;
+int enemiesLeft = 0;
 
 
 SDL_Texture* LoadTexture(const char* file, SDL_Renderer* renderer) {
@@ -64,6 +65,7 @@ void initializeGame(SDL_Renderer* renderer) {
     player1 = LoadTexture("player1.png", renderer);
     player2 = LoadTexture("player2.png", renderer);
     gun = LoadTexture("gun.png", renderer);
+    backG = LoadTexture("backG.png", renderer);
     loadGifFrames(renderer);
 }
 
@@ -82,9 +84,8 @@ void restartGame() {
 }
 
 void renderCurrency(SDL_Renderer* renderer, int currency){
-    SDL_Color textColor = {255,255,0};
     currencyText ="Currency: " + to_string(currency);
-    SDL_Surface* surface = TTF_RenderText_Solid(font50, currencyText.c_str(), textColor);
+    SDL_Surface* surface = TTF_RenderText_Solid(font50, currencyText.c_str(), black);
     SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_Rect text = {SCREEN_WIDTH - surface->w - 25,25, surface->w, surface->h};
     SDL_RenderCopy(renderer, texture, NULL, &text);
@@ -99,6 +100,10 @@ void renderDeathScreen(SDL_Renderer* renderer, TTF_Font* font) {
     SDL_RenderCopy(renderer, texture, NULL, &textRect);
     SDL_FreeSurface(surface);
     SDL_DestroyTexture(texture);
+}
+void renderBackGround(SDL_Renderer *renderer){
+    SDL_Rect bg = {0, 0, 1600, 900};
+    SDL_RenderCopy(renderer, backG, NULL, &bg);
 }
 
 
@@ -205,9 +210,11 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
                 return bullet.x < 0 || bullet.x > SCREEN_WIDTH || bullet.y < 0 || bullet.y > SCREEN_HEIGHT;
             }), bullets.end());        
 
-            SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255); 
-            SDL_RenderClear(renderer);
+            SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+            //renderBackGround(renderer);
+            SDL_RenderClear(renderer); // Clear old frame -> avoid ghost frame 
 
+            renderBackGround(renderer);
             renderPlayer(renderer, player);
             renderGun(renderer, gun, player.x, player.y + 17);
             renderEnemies(renderer);
@@ -217,7 +224,17 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
             renderRemainHealth(renderer,player);
             renderIngame(renderer);
             if (checkWave == true){
-                renderText(renderer, font50, ("Wave " + to_string(currentWave + 1) + " has started. Enemy count: " + to_string((int)(3*pow(1 + currentWave,2)))).c_str(), 800, 200, 800, 200, white);
+                renderText(renderer, font50, ("Wave " + to_string(currentWave + 1) + " has started. Enemy count: " + to_string((int)(3*pow(1 + currentWave,2)))).c_str(), 800, 200, 800, 200, black);
+                enemiesLeft = (int)(3*pow(1 + currentWave,2));
+            }
+            else{
+                int temp1 = enemiesLeft;
+                int temp2 = (int)(3*pow(currentWave,2));
+                if (currentWave == 5 || currentWave == 10){
+                    temp1 +=1;
+                    temp2 += 1;
+                }
+                renderText(renderer, font50, ("Enemies left: " + to_string(temp1) + "/" + to_string(temp2)).c_str(), 800, 800, 800, 800, black);
             }
 
             SDL_RenderPresent(renderer);
