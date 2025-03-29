@@ -4,19 +4,20 @@ bool movingLeft = true;
 void updatePlayerMovement(Player& player) {
     const Uint8* keystate = SDL_GetKeyboardState(NULL);
     int dx = 0, dy = 0;
-    if (keystate[SDL_SCANCODE_A]) {dx = -1; movingLeft = true;}
-    if (keystate[SDL_SCANCODE_D]) {dx = 1; movingLeft = false;}
+    if (keystate[SDL_SCANCODE_A]) { dx = -1; movingLeft = true; }
+    if (keystate[SDL_SCANCODE_D]) { dx = 1; movingLeft = false; }
     if (keystate[SDL_SCANCODE_W]) dy = -1;
     if (keystate[SDL_SCANCODE_S]) dy = 1;
-    if (dx != 0 && dy != 0) {
-        float normalizationFactor = 1.0f / sqrt(2);
-        player.x += player.speed * dx * normalizationFactor;
-        player.y += player.speed * dy * normalizationFactor;
-    } else {
-        player.x += player.speed * dx;
-        player.y += player.speed * dy;
+
+    float length = sqrt(dx * dx + dy * dy);
+    if (length != 0) {
+        float normalizedX = dx / length;
+        float normalizedY = dy / length;
+        player.x += round(normalizedX * player.speed);
+        player.y += round(normalizedY * player.speed);
     }
 }
+
 
 void renderPlayer(SDL_Renderer* renderer, Player& player) {
     /*

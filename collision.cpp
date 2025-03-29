@@ -13,7 +13,7 @@ bool crit_chance(){
     mt19937 gen(rd());
     uniform_int_distribution<> crit(1,100);
     
-    if (crit(gen)<=critrate){
+    if (crit(gen) <= critrate){
         return true;
     }
     else return false;

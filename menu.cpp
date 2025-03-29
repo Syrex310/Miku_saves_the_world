@@ -23,8 +23,6 @@ void renderPauseMenu(SDL_Renderer* renderer, TTF_Font* font) {
     renderText(renderer, font, "Resume", resumeButton.x, resumeButton.y, resumeButton.x + buttonWidth, resumeButton.y + buttonHeight, white);
     renderText(renderer, font, "Main Menu", menuButton.x, menuButton.y, menuButton.x + buttonWidth, menuButton.y + buttonHeight, white);
     renderText(renderer, font, "Exit Game", exitButton.x, exitButton.y, exitButton.x + buttonWidth, exitButton.y + buttonHeight, white);
-
-    SDL_RenderPresent(renderer);
 }
 
 
@@ -106,7 +104,7 @@ void renderMenu(SDL_Renderer* renderer, TTF_Font* font, GameState gameState) {
 void renderText(SDL_Renderer* renderer, TTF_Font* font, const char* text, int x1, int y1, int x2, int y2, SDL_Color textColor) {
     SDL_Surface* textSurface = TTF_RenderText_Solid(font, text, textColor);
     if (!textSurface) {
-        cout << "Text rendering failed! SDL_ttf Error: " << TTF_GetError() << endl;
+        cout << "SDL_TTF FAILED: " << TTF_GetError() << endl;
         return;
     }
     

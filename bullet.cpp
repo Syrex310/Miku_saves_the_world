@@ -58,6 +58,7 @@ void handleGameInput(SDL_Event& event, bool& running, GameState& gameState) {
             restartGame();
         }
     }
+    //Check shooting state
     if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT)) isShooting = true;
     else isShooting = false;
 }

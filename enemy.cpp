@@ -39,7 +39,7 @@ void spawnEnemy(int currentWave) {
 
     enemy.width = 40;
     enemy.height = 40;
-    enemy.speed = 2 + (currentWave / 3);
+    enemy.speed = 2 + ((currentWave - 1) / 3); // + 1 speed / 3 waevs
     enemy.health = 50 + (25 * currentWave);
 
     enemies.push_back(enemy);
@@ -80,6 +80,7 @@ void spawnWaves(SDL_Renderer *renderer, int &currentWave, int maxWaves, bool &wa
         Time_interval-=50;
         if (currentWave == 6) bossActive = false;
         if ((currentWave == 5 || currentWave == 10) && bossActive == false){
+            //spawn boss moi 5 waves
             bossActive = true;
             spawnBoss(currentWave);
         }
@@ -90,6 +91,7 @@ void spawnWaves(SDL_Renderer *renderer, int &currentWave, int maxWaves, bool &wa
         spawnEnemy(currentWave);
         enemiesSpawned+=1;
         lastEnemySpawnTime=currentTime;
+        //renderText(renderer, font50, ("Enemies Left: "+ to_string(enemiesSpawned) + "/" + to_string((int)(3*pow(currentWave,2)))).c_str(), 800, 800, 800, 800, white);
     }
 
     if (enemiesSpawned >= totalEnemies && !enemies.empty()) {

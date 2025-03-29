@@ -40,18 +40,18 @@ SDL_Texture* LoadTexture(const char* file, SDL_Renderer* renderer) {
 void initializeGame(SDL_Renderer* renderer) {
     loadGame(currency, health);
     if (TTF_Init() == -1) {
-        cout << "SDL_ttf could not initialize! SDL_ttf Error: " << TTF_GetError() << endl;
+        cout << "SDL_ttf init faield, error: " << TTF_GetError() << endl;
         exit(1);
     }
 
     font24 = TTF_OpenFont("VCR_OSD_MONO_1.001.ttf", 24);
     font50 = TTF_OpenFont("VCR_OSD_MONO_1.001.ttf", 50);
     if (!font24) {
-        cout << "Failed to load font! SDL_ttf Error: " << TTF_GetError() << endl;
+        cout << "Failed to load font 24. Error: " << TTF_GetError() << endl;
         exit(1);
     }
     if (!font50) {
-        cout << "Failed to load font! SDL_ttf Error: " << TTF_GetError() << endl;
+        cout << "Failed to load font 50. Error: " << TTF_GetError() << endl;
         exit(1);
     }
     playerTexture = LoadTexture("player.png", renderer);
@@ -86,14 +86,14 @@ void renderCurrency(SDL_Renderer* renderer, int currency){
     currencyText ="Currency: " + to_string(currency);
     SDL_Surface* surface = TTF_RenderText_Solid(font50, currencyText.c_str(), textColor);
     SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-    SDL_Rect textRect = {SCREEN_WIDTH - surface->w - 10,10, surface->w, surface->h};
-    SDL_RenderCopy(renderer, texture, NULL, &textRect);
+    SDL_Rect text = {SCREEN_WIDTH - surface->w - 25,25, surface->w, surface->h};
+    SDL_RenderCopy(renderer, texture, NULL, &text);
     SDL_FreeSurface(surface);
     SDL_DestroyTexture(texture);
 }
 void renderDeathScreen(SDL_Renderer* renderer, TTF_Font* font) {
     SDL_Color textColor = {255, 0, 0}; 
-    SDL_Surface* surface = TTF_RenderText_Solid(font, "You Died! Press R to return to Menu", textColor);
+    SDL_Surface* surface = TTF_RenderText_Solid(font, "YOU DIED! PRESS R TO RETURN TO MENU D:", textColor);
     SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_Rect textRect = { SCREEN_WIDTH / 2 - surface->w / 2, SCREEN_HEIGHT / 2 - surface->h / 2, surface->w, surface->h };
     SDL_RenderCopy(renderer, texture, NULL, &textRect);
@@ -129,11 +129,11 @@ bool init(SDL_Window*& window, SDL_Renderer*& renderer) {
 }
 
 void close(SDL_Window* window, SDL_Renderer* renderer) {
-    if (font24) {
+    if (font24 || font50) {
         TTF_CloseFont(font24);
         TTF_CloseFont(font50);
-        
         font24 = nullptr;
+        font50 = nullptr;
     }
     TTF_Quit();
     IMG_Quit();
@@ -182,7 +182,7 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
         else if (gameState == DEAD) {
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
             SDL_RenderClear(renderer);
-            renderDeathScreen(renderer, font24);
+            renderDeathScreen(renderer, font50);
             SDL_RenderPresent(renderer);
         }        
         else if (gameState == GAME) {
@@ -208,16 +208,16 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
             SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255); 
             SDL_RenderClear(renderer);
 
-            renderHealth(renderer, player);
-            renderRemainHealth(renderer,player);
-            renderIngame(renderer);
             renderPlayer(renderer, player);
             renderGun(renderer, gun, player.x, player.y + 17);
             renderEnemies(renderer);
             renderBullets(renderer);
             renderCurrency(renderer, currency);
+            renderHealth(renderer, player);
+            renderRemainHealth(renderer,player);
+            renderIngame(renderer);
             if (checkWave == true){
-                renderText(renderer, font50, ("Wave " + to_string(currentWave + 1) + " has started").c_str(), 800, 200, 800, 200, white);
+                renderText(renderer, font50, ("Wave " + to_string(currentWave + 1) + " has started. Enemy count: " + to_string((int)(3*pow(1 + currentWave,2)))).c_str(), 800, 200, 800, 200, white);
             }
 
             SDL_RenderPresent(renderer);

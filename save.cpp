@@ -5,7 +5,7 @@
 #include <fstream>
 
 using namespace std;
-int HP_upCost = 50, ATK_upCost = 100, SPEED_upCost = 425, FR_upCost = 450, CR_upCost = 500; 
+int HP_upCost = 50, ATK_upCost = 100, SPEED_upCost = 250, FR_upCost = 450, CR_upCost = 500; 
 int HP_stage = 1, ATK_stage = 1, SPEED_stage = 1, FR_stage = 1, CR_stage = 1;
 
 void saveGame() {
@@ -58,6 +58,7 @@ void Upgrade(Player& player, UpgradeType type){
             if (currency >= HP_upCost * HP_stage) {
                 health += 10;
                 player.maxhealth = health;
+                player.health += 10;
                 currency -= HP_upCost * HP_stage;
                 saveGame();
                 cout << "Upgrade purchased! Health increased by 10, remaining currency: " << currency << endl;
@@ -95,7 +96,7 @@ void Upgrade(Player& player, UpgradeType type){
                 currency -= FR_upCost * FR_stage;
                 saveGame();
 
-                cout << "Upgrade purchased! Fire rate increased by 0.2, remaining currency: " << currency << endl;
+                cout << "Upgrade purchased! Fire rate increased by 1, remaining currency: " << currency << endl;
             } else {
                 cout << "Not enough currency for upgrade!" << endl;
             }
