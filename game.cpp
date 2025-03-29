@@ -6,6 +6,7 @@
 #include "bullet.cpp"
 #include "menu.cpp"
 #include "gif.cpp"
+#include "gun.cpp"
 
 
 string currencyText;
@@ -19,7 +20,7 @@ Enemy enemy;
 GameState gameState = MENU;
 SDL_Texture* playerTexture = nullptr;
 SDL_Texture* enemyTexture = nullptr;
-SDL_Texture* menu1 = nullptr, *menu2 = nullptr, *menu3 = nullptr, *bullet2 = nullptr, *ingame = nullptr, *player1 = nullptr, *player2 = nullptr;
+SDL_Texture* menu1 = nullptr, *menu2 = nullptr, *menu3 = nullptr, *bullet2 = nullptr, *ingame = nullptr, *player1 = nullptr, *player2 = nullptr, *gun = nullptr;
 SDL_Color black = {0, 0, 0}, white = {255, 255, 255}, blue1 = {109, 198, 254};
 bool checkWave = false;
 
@@ -62,6 +63,7 @@ void initializeGame(SDL_Renderer* renderer) {
     ingame = LoadTexture("ingame.png", renderer);
     player1 = LoadTexture("player1.png", renderer);
     player2 = LoadTexture("player2.png", renderer);
+    gun = LoadTexture("gun.png", renderer);
     loadGifFrames(renderer);
 }
 
@@ -210,6 +212,7 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
             renderRemainHealth(renderer,player);
             renderIngame(renderer);
             renderPlayer(renderer, player);
+            renderGun(renderer, gun, player.x, player.y + 17);
             renderEnemies(renderer);
             renderBullets(renderer);
             renderCurrency(renderer, currency);

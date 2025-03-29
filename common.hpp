@@ -58,9 +58,7 @@ struct Bullet {
     void move();
 };
 
-strucr gun {
-    float
-}
+
 
 bool checkCollision(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 void updateCollisions(Player& player, vector<Enemy>& enemies, vector<Bullet>& bullets);

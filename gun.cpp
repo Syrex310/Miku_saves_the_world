@@ -13,7 +13,6 @@ void renderGun(SDL_Renderer* renderer, SDL_Texture* gunTexture, int playerX, int
 
     double angle = calculateAngle(playerX, playerY, mouseX, mouseY);
 
-    SDL_Rect gunRect = {playerX, playerY, 50, 20}; // Gun size (adjust as needed)
-
+    SDL_Rect gunRect = {playerX, playerY, 36, 5};
     SDL_RenderCopyEx(renderer, gunTexture, NULL, &gunRect, angle, NULL, SDL_FLIP_NONE);
 }
