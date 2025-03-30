@@ -89,3 +89,4 @@ extern bool checkWave;
 extern int enemiesLeft;
 extern Mix_Chunk *sShot, *sEnemydeath, *sClick;
 extern Mix_Music *sBackground;
+extern Uint32 lastWaveTime;

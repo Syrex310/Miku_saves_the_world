@@ -26,6 +26,7 @@ bool checkWave = false;
 int enemiesLeft = 0;
 Mix_Chunk *sShot = nullptr, *sEnemydeath = nullptr, *sClick = nullptr;
 Mix_Music *sBackground = nullptr;
+Uint32 lastWaveTime = SDL_GetTicks();
 
 
 SDL_Texture* LoadTexture(const char* file, SDL_Renderer* renderer) {
@@ -70,6 +71,8 @@ void initializeGame(SDL_Renderer* renderer) {
 
 
 void restartGame() {
+    Uint32 timeNow = SDL_GetTicks();
+    lastWaveTime = timeNow;
     player = { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 40, 40, 3, health, health };
     enemies.clear();
     bullets.clear();
@@ -181,7 +184,6 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
     int frameTime;
 
     int maxWaves = 10;
-    Uint32 lastWaveTime = SDL_GetTicks();
     int enemiesSpawned = 0;
     Uint32 lastEnemySpawnTime = SDL_GetTicks();
     while (running) {
