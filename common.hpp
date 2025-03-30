@@ -2,6 +2,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_mixer.h>
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -68,6 +69,7 @@ void loadGame(int &currency, int &health);
 void Upgrade(Player& player, UpgradeType type);
 void renderGif(SDL_Renderer* renderer);
 void restartGame();
+void switchMusic(Mix_Music*& oldMusic, const char* newMusicFile);
 
 
 extern Player player;
@@ -80,8 +82,10 @@ extern SDL_Texture* LoadTexture(const char* file, SDL_Renderer* renderer);
 extern vector<Bullet> bullets;
 extern vector<Enemy> enemies;
 extern GameState gameState;
-extern SDL_Texture *playerTexture, *enemyTexture, *menu1, *menu2, *menu3, *bullet2, *ingame, *player1, *player2, *gun, *backG;
+extern SDL_Texture *playerTexture, *enemyTexture, *menu1, *menu2, *menu3, *bullet2, *ingame, *player1, *player2, *gun, *backG, *pausemenu;
 extern TTF_Font *font24, *font50;
-extern SDL_Color white, black, blue1;
+extern SDL_Color white, black, blue1, blue2, blue3;
 extern bool checkWave;
 extern int enemiesLeft;
+extern Mix_Chunk *sShot, *sEnemydeath, *sClick;
+extern Mix_Music *sBackground;

@@ -15,15 +15,17 @@ int health = 100, attack = 25, speed = 3, firerate = 1, critrate = 0;
 int currentWave = 0;
 bool waveActive = false;
 TTF_Font *font24 = nullptr, *font50 = nullptr;
-Player player = { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 25, 48, speed, health, health};
+Player player = { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 49, 54, speed, health, health};
 Enemy enemy;
 GameState gameState = MENU;
 SDL_Texture* playerTexture = nullptr;
 SDL_Texture* enemyTexture = nullptr;
-SDL_Texture* menu1 = nullptr, *menu2 = nullptr, *menu3 = nullptr, *bullet2 = nullptr, *ingame = nullptr, *player1 = nullptr, *player2 = nullptr, *gun = nullptr, *backG = nullptr;
-SDL_Color black = {0, 0, 0}, white = {255, 255, 255}, blue1 = {109, 198, 254};
+SDL_Texture* menu1 = nullptr, *menu2 = nullptr, *menu3 = nullptr, *bullet2 = nullptr, *ingame = nullptr, *player1 = nullptr, *player2 = nullptr, *gun = nullptr, *backG = nullptr, *pausemenu = nullptr;
+SDL_Color black = {0, 0, 0}, white = {255, 255, 255}, blue1 = {109, 198, 254}, blue2 = {106, 202, 242}, blue3 = {85, 151, 190};
 bool checkWave = false;
 int enemiesLeft = 0;
+Mix_Chunk *sShot = nullptr, *sEnemydeath = nullptr, *sClick = nullptr;
+Mix_Music *sBackground = nullptr;
 
 
 SDL_Texture* LoadTexture(const char* file, SDL_Renderer* renderer) {
@@ -40,32 +42,29 @@ SDL_Texture* LoadTexture(const char* file, SDL_Renderer* renderer) {
 
 void initializeGame(SDL_Renderer* renderer) {
     loadGame(currency, health);
-    if (TTF_Init() == -1) {
-        cout << "SDL_ttf init faield, error: " << TTF_GetError() << endl;
-        exit(1);
-    }
 
     font24 = TTF_OpenFont("VCR_OSD_MONO_1.001.ttf", 24);
     font50 = TTF_OpenFont("VCR_OSD_MONO_1.001.ttf", 50);
-    if (!font24) {
-        cout << "Failed to load font 24. Error: " << TTF_GetError() << endl;
-        exit(1);
-    }
-    if (!font50) {
-        cout << "Failed to load font 50. Error: " << TTF_GetError() << endl;
-        exit(1);
-    }
     playerTexture = LoadTexture("player.png", renderer);
     enemyTexture = LoadTexture("enemy.png", renderer);
     menu1 = LoadTexture("menu1.png", renderer);
     menu2= LoadTexture("menu2.png", renderer);
     menu3 = LoadTexture("menu3.png", renderer);
-    bullet2 = LoadTexture("bullet2.png", renderer);
+    bullet2 = LoadTexture("bullet4.png", renderer);
     ingame = LoadTexture("ingame.png", renderer);
-    player1 = LoadTexture("player1.png", renderer);
-    player2 = LoadTexture("player2.png", renderer);
+    player1 = LoadTexture("char1.png", renderer);
+    player2 = LoadTexture("char2.png", renderer);
     gun = LoadTexture("gun.png", renderer);
     backG = LoadTexture("backG.png", renderer);
+    pausemenu = LoadTexture("pausemenu.png", renderer);
+
+    sShot = Mix_LoadWAV("shot.wav");
+    Mix_VolumeChunk(sShot, 10);
+    sEnemydeath = Mix_LoadWAV("cat_meow.wav");
+    Mix_VolumeChunk(sEnemydeath, 32);
+    sClick = Mix_LoadWAV("click.wav");
+    Mix_VolumeChunk(sClick, 96);
+
     loadGifFrames(renderer);
 }
 
@@ -80,6 +79,8 @@ void restartGame() {
     enemy.speed = 3;
     player.health = player.maxhealth;
     checkWave = false;
+    Mix_VolumeMusic(32);
+    switchMusic(sBackground, "Triple5 Here - Crystallogy.mp3");
     gameState = MENU;
 }
 
@@ -105,6 +106,17 @@ void renderBackGround(SDL_Renderer *renderer){
     SDL_Rect bg = {0, 0, 1600, 900};
     SDL_RenderCopy(renderer, backG, NULL, &bg);
 }
+void switchMusic(Mix_Music*& oldMusic, const char* newMusicFile) {
+    Mix_HaltMusic();
+    if (oldMusic) {
+        Mix_FreeMusic(oldMusic);
+        oldMusic = nullptr;
+    }// stop + free previous msuci
+
+    oldMusic = Mix_LoadMUS(newMusicFile);
+    Mix_PlayMusic(oldMusic, -1); // newmusic
+}
+
 
 
 
@@ -115,18 +127,29 @@ bool init(SDL_Window*& window, SDL_Renderer*& renderer) {
         return false;
     }
     if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
-        cout << "SDL_image could not initialize! SDL_image Error: " << IMG_GetError() << endl;
+        cout << "SDL_image failed. SDL_image Error: " << IMG_GetError() << endl;
         return false;
     }
+    if (TTF_Init() == -1) {
+        cout << "SDL_ttf init faield, error: " << TTF_GetError() << endl;
+        return false;
+    }
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+        std::cerr << "SDL_mixer faiesd. Error: " << Mix_GetError()<< std::endl;
+        return false;
+    }
+    Mix_VolumeMusic(32);
+    Mix_AllocateChannels(128);
+    switchMusic(sBackground, "Triple5 Here - Crystallogy.mp3");
     window = SDL_CreateWindow("SDL Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if (!window) {
-        cout << "Window could not be created! SDL_Error: " << SDL_GetError() << endl;
+        cout << "Window could not be created. SDL_Error: " << SDL_GetError() << endl;
         return false;
     }
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if (!renderer) {
-        cout << "Renderer could not be created! SDL_Error: " << SDL_GetError() << endl;
+        cout << "Renderer failed. SDL_Error: " << SDL_GetError() << endl;
         return false;
     }
 
@@ -134,14 +157,12 @@ bool init(SDL_Window*& window, SDL_Renderer*& renderer) {
 }
 
 void close(SDL_Window* window, SDL_Renderer* renderer) {
-    if (font24 || font50) {
-        TTF_CloseFont(font24);
-        TTF_CloseFont(font50);
-        font24 = nullptr;
-        font50 = nullptr;
-    }
+    TTF_CloseFont(font24);
+    TTF_CloseFont(font50);
     TTF_Quit();
     IMG_Quit();
+    Mix_CloseAudio();
+    Mix_Quit();
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
@@ -212,11 +233,11 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer) {
 
             SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
             //renderBackGround(renderer);
-            SDL_RenderClear(renderer); // Clear old frame -> avoid ghost frame 
+            SDL_RenderClear(renderer); // clear old frame
 
             renderBackGround(renderer);
             renderPlayer(renderer, player);
-            renderGun(renderer, gun, player.x, player.y + 17);
+            renderGun(renderer, gun, player.x + player.width / 2 - 18, player.y + player.height / 2 - 6 + 12);
             renderEnemies(renderer);
             renderBullets(renderer);
             renderCurrency(renderer, currency);

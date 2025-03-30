@@ -13,8 +13,16 @@ void updatePlayerMovement(Player& player) {
     if (length != 0) {
         float normalizedX = dx / length;
         float normalizedY = dy / length;
-        player.x += round(normalizedX * player.speed);
-        player.y += round(normalizedY * player.speed);
+        int newX = round(player.x + normalizedX * player.speed);
+        int newY = round(player.y + normalizedY * player.speed);
+
+        //limit 50 50 -> 1500 800
+        if (newX >= 50 && newX <= 1500) {
+            player.x = newX;
+        }
+        if (newY >= 50 && newY <= 800) {
+            player.y = newY;
+        }
     }
 }
 
@@ -34,12 +42,12 @@ void renderPlayer(SDL_Renderer* renderer, Player& player) {
 
 }
 void renderRemainHealth(SDL_Renderer* renderer, Player& player) {
-    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+    SDL_SetRenderDrawColor(renderer, 149, 240, 226, 255);
     SDL_Rect remainhealthBar = { 0, 15, 493 * player.health / player.maxhealth, 75 };
     SDL_RenderFillRect(renderer, &remainhealthBar);
 }
 void renderHealth(SDL_Renderer* renderer, Player& player) {
-    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+    SDL_SetRenderDrawColor(renderer, 87, 222, 203, 255);
     SDL_Rect healthBar = { 0, 15, 493, 75 };
     SDL_RenderFillRect(renderer, &healthBar);
 }

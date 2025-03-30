@@ -37,6 +37,7 @@ void loadGame(int& currency, int& health) {
             currency = 0;
             health = 100; attack = 25; speed = 3; firerate = 1; critrate = 0;
             HP_stage = 1; ATK_stage = 1; SPEED_stage = 1; FR_stage = 1; CR_stage = 1;
+            saveGame();
         } else {
             saveFile >> currency >> health >> attack >> speed >> firerate >> critrate >> HP_stage >> ATK_stage >> SPEED_stage >> FR_stage >> CR_stage;
             cout << "Game loaded!" << endl;
@@ -47,6 +48,7 @@ void loadGame(int& currency, int& health) {
         currency = 0;
         health = 100; attack = 25; speed = 3; firerate = 1; critrate = 0;
         HP_stage = 1; ATK_stage = 1; SPEED_stage = 1; FR_stage = 1; CR_stage = 1;
+        saveGame();
     }
     player.health=health;
     player.maxhealth=health;
@@ -60,6 +62,7 @@ void Upgrade(Player& player, UpgradeType type){
                 player.maxhealth = health;
                 player.health += 10;
                 currency -= HP_upCost * HP_stage;
+                HP_stage +=1 ;
                 saveGame();
                 cout << "Upgrade purchased! Health increased by 10, remaining currency: " << currency << endl;
             } else {
@@ -71,6 +74,7 @@ void Upgrade(Player& player, UpgradeType type){
                 
                 attack += 15;
                 currency -= ATK_upCost * ATK_stage;
+                ATK_stage += 1;
                 saveGame();
 
                 cout << "Upgrade purchased! Attack increased by 15, remaining currency: " << currency << endl;
@@ -83,6 +87,7 @@ void Upgrade(Player& player, UpgradeType type){
                 speed += 1;
                 player.speed = speed;
                 currency -= SPEED_upCost * SPEED_stage;
+                SPEED_stage += 1;
                 saveGame();
 
                 cout << "Upgrade purchased! Speed increased by 1, remaining currency: " << currency << endl;
@@ -94,6 +99,7 @@ void Upgrade(Player& player, UpgradeType type){
             if (currency >= FR_upCost * FR_stage) {
                 firerate += 1;
                 currency -= FR_upCost * FR_stage;
+                FR_stage += 1;
                 saveGame();
 
                 cout << "Upgrade purchased! Fire rate increased by 1, remaining currency: " << currency << endl;

@@ -2,27 +2,8 @@
 
 
 void renderPauseMenu(SDL_Renderer* renderer, TTF_Font* font) {
-    int buttonWidth = 300;
-    int buttonHeight = 60;
-    int centerX = (1600 - buttonWidth) / 2;
-    int centerY = (900 - buttonHeight) / 2;
-
-    SDL_SetRenderDrawColor(renderer, 50, 50, 50, 255);
-    SDL_Rect bg = { centerX - 20, centerY - 40, buttonWidth + 40, buttonHeight * 3 + 80 };
-    SDL_RenderFillRect(renderer, &bg);
-
-    SDL_SetRenderDrawColor(renderer, 150, 150, 150, 255);
-    SDL_Rect resumeButton = { centerX, centerY, buttonWidth, buttonHeight };
-    SDL_Rect menuButton = { centerX, centerY + 80, buttonWidth, buttonHeight };
-    SDL_Rect exitButton = { centerX, centerY + 160, buttonWidth, buttonHeight };
-
-    SDL_RenderFillRect(renderer, &resumeButton);
-    SDL_RenderFillRect(renderer, &menuButton);
-    SDL_RenderFillRect(renderer, &exitButton);
-
-    renderText(renderer, font, "Resume", resumeButton.x, resumeButton.y, resumeButton.x + buttonWidth, resumeButton.y + buttonHeight, white);
-    renderText(renderer, font, "Main Menu", menuButton.x, menuButton.y, menuButton.x + buttonWidth, menuButton.y + buttonHeight, white);
-    renderText(renderer, font, "Exit Game", exitButton.x, exitButton.y, exitButton.x + buttonWidth, exitButton.y + buttonHeight, white);
+    SDL_Rect pausem = {0, 0, 1600, 900};
+    SDL_RenderCopy(renderer, pausemenu, NULL, &pausem);
 }
 
 
@@ -34,13 +15,25 @@ void handleMenuInput(SDL_Event& event, bool& running, GameState& gameState) {
     if (event.type == SDL_MOUSEBUTTONDOWN) {
         int mouseX, mouseY;
         SDL_GetMouseState(&mouseX, &mouseY);
-
+        Mix_PlayChannel(-1, sClick, 0);
         //cout << "Mouse Clicked at: " << mouseX << ", " << mouseY << endl;
 
         if (gameState == MENU){
-            if (mouseX < 700 && mouseY > 100 && mouseY < 300) {gameState = GAME; cout<<"Start/Continue Game"<<endl;}
-            else if (mouseX < 600 && mouseY > 325 && mouseY < 525) {gameState = UPGRADES; cout<<"Upgrade Menu Clicked"<<endl;}
-            else if (mouseX < 500 && mouseY > 550 && mouseY < 750) {running = false; saveGame(); cout<<"Exit Game"<<endl;}
+            if (mouseX < 700 && mouseY > 100 && mouseY < 300) {
+                Mix_VolumeMusic(24);
+                switchMusic(sBackground, "AudioCoffee Band - Digital Technology.mp3");
+                gameState = GAME;
+                cout<<"Start/Continue Game"<<endl;
+            }
+            else if (mouseX < 600 && mouseY > 325 && mouseY < 525) {
+                switchMusic(sBackground, "AudioCoffee Band - Pure Inspiration.mp3");
+                gameState = UPGRADES;
+                cout<<"Upgrade Menu Clicked"<<endl;
+            }
+            else if (mouseX < 500 && mouseY > 550 && mouseY < 750) {
+                running = false; saveGame();
+                cout<<"Exit Game"<<endl;
+            }
         }
         else if (gameState == UPGRADES) {  
             if (mouseX > 50 && mouseX < 950){
@@ -53,11 +46,14 @@ void handleMenuInput(SDL_Event& event, bool& running, GameState& gameState) {
                 }
             }
             else if (mouseX > 1050 && mouseX < 1550 && mouseY > 600 && mouseY < 850){
+                switchMusic(sBackground, "Triple5 Here - Crystallogy.mp3");
                 gameState = MENU;
                 cout<<"Returned to MENU"<<endl;
             }
         }
         else if (gameState == WON){
+            Mix_VolumeMusic(32);
+            switchMusic(sBackground, "Triple5 Here - Crystallogy.mp3");
             gameState = MENU;
         }
     }

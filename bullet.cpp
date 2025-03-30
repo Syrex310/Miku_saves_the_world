@@ -7,7 +7,7 @@ void Bullet::move() {
 void renderBullets(SDL_Renderer* renderer) {
     SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255); 
     for (auto& bullet : bullets) {
-        SDL_Rect bull = { static_cast<int>(bullet.x), static_cast<int>(bullet.y), 15,15 };
+        SDL_Rect bull = { (int)(bullet.x - 7), (int)(bullet.y - 7 + 12), 14,14 };
         SDL_RenderCopy(renderer, bullet2, NULL, &bull);
     }
 }
@@ -16,13 +16,7 @@ Uint32 lastShotTime = 0;
 void handleGameInput(SDL_Event& event, bool& running, GameState& gameState) {
     int mouseX, mouseY;
     SDL_GetMouseState(&mouseX, &mouseY);
-    int buttonWidth = 200;
-    int buttonHeight = 50;
-    int centerX = (1600 - buttonWidth) / 2;
-    int centerY = (900 - buttonHeight) / 2;
-    int startY = 300;
-    int spacing = 100;
-
+    
     if (event.type == SDL_QUIT) {
         saveGame();
         running = false;
@@ -40,14 +34,19 @@ void handleGameInput(SDL_Event& event, bool& running, GameState& gameState) {
         }
     }
     else if (event.type == SDL_MOUSEBUTTONDOWN && gameState == PAUSED) {
-        if (mouseX > centerX && mouseX < centerX + 300) {  
-            if (mouseY > centerY && mouseY < centerY + 60) {
+        if (mouseX > 1310 && mouseX < 1550 && mouseY >775 && mouseY < 860){
+            restartGame();
+        }
+        if (mouseX > 550 && mouseX < 1055) {  
+            if (mouseY > 350 && mouseY < 410) {
                 gameState = GAME;
             }
-            if (mouseY > centerY + 80 && mouseY < centerY + 140) {
+            if (mouseY > 420 && mouseY < 480) {
+                Mix_VolumeMusic(32);
+                switchMusic(sBackground, "Triple5 Here - Crystallogy.mp3");
                 gameState = MENU;
             }
-            if (mouseY > centerY + 160 && mouseY < centerY + 220) {
+            if (mouseY > 490 && mouseY < 550) {
                 saveGame();
                 running = false;
             }
@@ -72,5 +71,6 @@ void updateShooting(Player& player) {
         SDL_GetMouseState(&mouseX, &mouseY);
         bullets.push_back(Bullet(player.x + player.width / 2, player.y + player.height / 2, mouseX, mouseY));
         lastShotTime = currentTime;
+        Mix_PlayChannel(-1, sShot, 0);
     }
 }

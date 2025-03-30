@@ -1,6 +1,7 @@
 #include "common.hpp"
 
 void enemyDefeated(){
+    Mix_PlayChannel(-1, sEnemydeath, 0);
     currency += currentWave;
     enemiesLeft -= 1;
     saveGame();
