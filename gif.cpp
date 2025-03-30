@@ -8,7 +8,7 @@ const int frameDelay = 100;
 
 void loadGifFrames(SDL_Renderer* renderer) {
     for (int i = 1; i <= 16; i++) {
-        string filename = "t" + to_string(i) + ".png";
+        string filename = "image/t" + to_string(i) + ".png";
         SDL_Texture* frame = LoadTexture(filename.c_str(), renderer);
         if (frame) {
             gifFrames.push_back(frame);

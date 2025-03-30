@@ -43,7 +43,7 @@ void handleGameInput(SDL_Event& event, bool& running, GameState& gameState) {
             }
             if (mouseY > 420 && mouseY < 480) {
                 Mix_VolumeMusic(32);
-                switchMusic(sBackground, "Triple5 Here - Crystallogy.mp3");
+                switchMusic(sBackground, "sound/Triple5 Here - Crystallogy.mp3");
                 gameState = MENU;
             }
             if (mouseY > 490 && mouseY < 550) {

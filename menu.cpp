@@ -21,12 +21,12 @@ void handleMenuInput(SDL_Event& event, bool& running, GameState& gameState) {
         if (gameState == MENU){
             if (mouseX < 700 && mouseY > 100 && mouseY < 300) {
                 Mix_VolumeMusic(24);
-                switchMusic(sBackground, "AudioCoffee Band - Digital Technology.mp3");
+                switchMusic(sBackground, "sound/AudioCoffee Band - Digital Technology.mp3");
                 gameState = GAME;
                 cout<<"Start/Continue Game"<<endl;
             }
             else if (mouseX < 600 && mouseY > 325 && mouseY < 525) {
-                switchMusic(sBackground, "AudioCoffee Band - Pure Inspiration.mp3");
+                switchMusic(sBackground, "sound/AudioCoffee Band - Pure Inspiration.mp3");
                 gameState = UPGRADES;
                 cout<<"Upgrade Menu Clicked"<<endl;
             }
@@ -46,14 +46,14 @@ void handleMenuInput(SDL_Event& event, bool& running, GameState& gameState) {
                 }
             }
             else if (mouseX > 1050 && mouseX < 1550 && mouseY > 600 && mouseY < 850){
-                switchMusic(sBackground, "Triple5 Here - Crystallogy.mp3");
+                switchMusic(sBackground, "sound/Triple5 Here - Crystallogy.mp3");
                 gameState = MENU;
                 cout<<"Returned to MENU"<<endl;
             }
         }
         else if (gameState == WON){
             Mix_VolumeMusic(32);
-            switchMusic(sBackground, "Triple5 Here - Crystallogy.mp3");
+            switchMusic(sBackground, "sound/Triple5 Here - Crystallogy.mp3");
             gameState = MENU;
         }
     }

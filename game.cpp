@@ -43,26 +43,26 @@ SDL_Texture* LoadTexture(const char* file, SDL_Renderer* renderer) {
 void initializeGame(SDL_Renderer* renderer) {
     loadGame(currency, health);
 
-    font24 = TTF_OpenFont("VCR_OSD_MONO_1.001.ttf", 24);
-    font50 = TTF_OpenFont("VCR_OSD_MONO_1.001.ttf", 50);
-    playerTexture = LoadTexture("player.png", renderer);
-    enemyTexture = LoadTexture("enemy.png", renderer);
-    menu1 = LoadTexture("menu1.png", renderer);
-    menu2= LoadTexture("menu2.png", renderer);
-    menu3 = LoadTexture("menu3.png", renderer);
-    bullet2 = LoadTexture("bullet4.png", renderer);
-    ingame = LoadTexture("ingame.png", renderer);
-    player1 = LoadTexture("char1.png", renderer);
-    player2 = LoadTexture("char2.png", renderer);
-    gun = LoadTexture("gun.png", renderer);
-    backG = LoadTexture("backG.png", renderer);
-    pausemenu = LoadTexture("pausemenu.png", renderer);
+    font24 = TTF_OpenFont("font/VCR_OSD_MONO_1.001.ttf", 24);
+    font50 = TTF_OpenFont("font/VCR_OSD_MONO_1.001.ttf", 50);
+    playerTexture = LoadTexture("image/player.png", renderer);
+    enemyTexture = LoadTexture("image/enemy.png", renderer);
+    menu1 = LoadTexture("image/menu1.png", renderer);
+    menu2= LoadTexture("image/menu2.png", renderer);
+    menu3 = LoadTexture("image/menu3.png", renderer);
+    bullet2 = LoadTexture("image/bullet4.png", renderer);
+    ingame = LoadTexture("image/ingame.png", renderer);
+    player1 = LoadTexture("image/char1.png", renderer);
+    player2 = LoadTexture("image/char2.png", renderer);
+    gun = LoadTexture("image/gun.png", renderer);
+    backG = LoadTexture("image/backG.png", renderer);
+    pausemenu = LoadTexture("image/pausemenu.png", renderer);
 
-    sShot = Mix_LoadWAV("shot.wav");
+    sShot = Mix_LoadWAV("sound/shot.wav");
     Mix_VolumeChunk(sShot, 10);
-    sEnemydeath = Mix_LoadWAV("cat_meow.wav");
+    sEnemydeath = Mix_LoadWAV("sound/cat_meow.wav");
     Mix_VolumeChunk(sEnemydeath, 32);
-    sClick = Mix_LoadWAV("click.wav");
+    sClick = Mix_LoadWAV("sound/click.wav");
     Mix_VolumeChunk(sClick, 96);
 
     loadGifFrames(renderer);
@@ -80,7 +80,7 @@ void restartGame() {
     player.health = player.maxhealth;
     checkWave = false;
     Mix_VolumeMusic(32);
-    switchMusic(sBackground, "Triple5 Here - Crystallogy.mp3");
+    switchMusic(sBackground, "sound/Triple5 Here - Crystallogy.mp3");
     gameState = MENU;
 }
 
@@ -140,7 +140,7 @@ bool init(SDL_Window*& window, SDL_Renderer*& renderer) {
     }
     Mix_VolumeMusic(32);
     Mix_AllocateChannels(128);
-    switchMusic(sBackground, "Triple5 Here - Crystallogy.mp3");
+    switchMusic(sBackground, "sound/Triple5 Here - Crystallogy.mp3");
     window = SDL_CreateWindow("SDL Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if (!window) {
         cout << "Window could not be created. SDL_Error: " << SDL_GetError() << endl;
