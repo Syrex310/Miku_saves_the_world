@@ -6,6 +6,10 @@ void renderPauseMenu(SDL_Renderer* renderer, TTF_Font* font) {
     SDL_RenderCopy(renderer, pausemenu, NULL, &pausem);
 }
 
+void renderWinMenu(SDL_Renderer *renderer){
+    SDL_Rect winner = {0, 0, 1600, 900};
+    SDL_RenderCopy(renderer, winscreen, NULL, &winner);
+}
 
 void handleMenuInput(SDL_Event& event, bool& running, GameState& gameState) {
     if (event.type == SDL_QUIT) {

@@ -24,10 +24,17 @@ void renderGif(SDL_Renderer* renderer) {
     if (gifFrames.empty()) return;
 
     Uint32 currentTime = SDL_GetTicks();
-    if (currentTime > lastFrameTime + frameDelay) {
-        currentFrame = (currentFrame + 1) % gifFrames.size();
-        lastFrameTime = currentTime;
+    if (currentTime >= lastFrameTime + frameDelay) {
+        currentFrame = (currentFrame + 1) % gifFrames.size(); //change frames
+        lastFrameTime = currentTime; //update time
     }
-    SDL_Rect rec = {0, 0, 1600, 900};
-    SDL_RenderCopy(renderer, gifFrames[currentFrame], NULL, &rec);
+    SDL_Rect pos = {0, 0, 1600, 900};
+    SDL_RenderCopy(renderer, gifFrames[currentFrame], NULL, &pos);
+}
+
+void freeGifFrames() {
+    for (SDL_Texture* frame : gifFrames) {
+        SDL_DestroyTexture(frame);
+    }
+    gifFrames.clear(); //free 16 frame upon exit
 }

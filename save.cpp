@@ -50,8 +50,9 @@ void loadGame(int& currency, int& health) {
         HP_stage = 1; ATK_stage = 1; SPEED_stage = 1; FR_stage = 1; CR_stage = 1;
         saveGame();
     }
-    player.health=health;
-    player.maxhealth=health;
+    player.health = health;
+    player.maxhealth  =health;
+    player.speed = speed;
 }
 
 void Upgrade(Player& player, UpgradeType type){

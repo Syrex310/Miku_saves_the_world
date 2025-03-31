@@ -82,7 +82,7 @@ extern SDL_Texture* LoadTexture(const char* file, SDL_Renderer* renderer);
 extern vector<Bullet> bullets;
 extern vector<Enemy> enemies;
 extern GameState gameState;
-extern SDL_Texture *playerTexture, *enemyTexture, *menu1, *menu2, *menu3, *bullet2, *ingame, *player1, *player2, *gun, *backG, *pausemenu;
+extern SDL_Texture *playerTexture, *enemyTexture, *menu1, *menu2, *menu3, *bullet2, *ingame, *player1, *player2, *gun, *backG, *pausemenu, *winscreen;
 extern TTF_Font *font24, *font50;
 extern SDL_Color white, black, blue1, blue2, blue3;
 extern bool checkWave;

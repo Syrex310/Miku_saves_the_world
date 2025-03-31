@@ -7,7 +7,7 @@ void Bullet::move() {
 void renderBullets(SDL_Renderer* renderer) {
     SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255); 
     for (auto& bullet : bullets) {
-        SDL_Rect bull = { (int)(bullet.x - 7), (int)(bullet.y - 7 + 12), 14,14 };
+        SDL_Rect bull = { (int)(bullet.x - 7), (int)(bullet.y - 7 + 12), 14,14 }; // adjusted to be in the character's hand(gun) position
         SDL_RenderCopy(renderer, bullet2, NULL, &bull);
     }
 }
@@ -57,7 +57,13 @@ void handleGameInput(SDL_Event& event, bool& running, GameState& gameState) {
             restartGame();
         }
     }
-    //Check shooting state
+    if (gameState == WON){
+        if (event.type = SDL_KEYDOWN && event.key.keysym.sym == SDLK_SPACE){
+            currency += 5000; //reward
+            restartGame();
+        }
+    }
+    //Check shooting state 
     if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT)) isShooting = true;
     else isShooting = false;
 }
@@ -66,10 +72,10 @@ void handleGameInput(SDL_Event& event, bool& running, GameState& gameState) {
 void updateShooting(Player& player) {
     Uint32 currentTime = SDL_GetTicks();
     int timeBetweenAttack = (currentTime - lastShotTime) * firerate;
-    if (isShooting && timeBetweenAttack >= 250){
+    if (isShooting && timeBetweenAttack >= 250){ //shoot every 0.25 second modified by firerate of character above
         int mouseX, mouseY;
         SDL_GetMouseState(&mouseX, &mouseY);
-        bullets.push_back(Bullet(player.x + player.width / 2, player.y + player.height / 2, mouseX, mouseY));
+        bullets.push_back(Bullet(player.x + player.width / 2, player.y + player.height / 2, mouseX, mouseY)); // point where the mouse is pointing
         lastShotTime = currentTime;
         Mix_PlayChannel(-1, sShot, 0);
     }

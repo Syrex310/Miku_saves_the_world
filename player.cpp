@@ -5,7 +5,7 @@ void updatePlayerMovement(Player& player) {
     const Uint8* keystate = SDL_GetKeyboardState(NULL);
     int dx = 0, dy = 0;
     if (keystate[SDL_SCANCODE_A]) { dx = -1; movingLeft = true; }
-    if (keystate[SDL_SCANCODE_D]) { dx = 1; movingLeft = false; }
+    if (keystate[SDL_SCANCODE_D]) { dx = 1; movingLeft = false; } //used for render character moving left/right
     if (keystate[SDL_SCANCODE_W]) dy = -1;
     if (keystate[SDL_SCANCODE_S]) dy = 1;
 
@@ -14,7 +14,7 @@ void updatePlayerMovement(Player& player) {
         float normalizedX = dx / length;
         float normalizedY = dy / length;
         int newX = round(player.x + normalizedX * player.speed);
-        int newY = round(player.y + normalizedY * player.speed);
+        int newY = round(player.y + normalizedY * player.speed); //consistent move speed
 
         //limit 50 50 -> 1500 800
         if (newX >= 50 && newX <= 1500) {
@@ -28,16 +28,12 @@ void updatePlayerMovement(Player& player) {
 
 
 void renderPlayer(SDL_Renderer* renderer, Player& player) {
-    /*
-    SDL_Rect rect = { player.x, player.y, player.width, player.height };
-    SDL_RenderCopy(renderer, playerTexture, NULL, &rect);
-    */
     SDL_Rect play = {player.x, player.y, player.width, player.height};
     if (!movingLeft){
-        SDL_RenderCopy(renderer, player1, NULL, &play);
+        SDL_RenderCopy(renderer, player1, NULL, &play); //move left
     }
     else{
-        SDL_RenderCopy(renderer, player2, NULL, &play);
+        SDL_RenderCopy(renderer, player2, NULL, &play); //move right
     }
 
 }
@@ -52,6 +48,6 @@ void renderHealth(SDL_Renderer* renderer, Player& player) {
     SDL_RenderFillRect(renderer, &healthBar);
 }
 void renderIngame(SDL_Renderer *renderer){
-    SDL_Rect rect = {0, 0, 1600, 900};
-    SDL_RenderCopy(renderer, ingame, NULL, &rect);
+    SDL_Rect igame = {0, 0, 1600, 900};
+    SDL_RenderCopy(renderer, ingame, NULL, &igame);
 }

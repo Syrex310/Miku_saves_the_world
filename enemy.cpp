@@ -10,22 +10,20 @@ void Enemy::moveTowardPlayer(Player& player) {
         float normalizedX = dx / length;
         float normalizedY = dy / length;
         x += round((normalizedX) * speed);
-        y += round((normalizedY) * speed);
+        y += round((normalizedY) * speed); //make enemies move consistently
     }
 }
 
 void renderEnemies(SDL_Renderer* renderer) {
-    //SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
     for (auto& enemy : enemies) {
-        SDL_Rect rect = { enemy.x, enemy.y, enemy.width, enemy.height };
-        SDL_RenderCopy(renderer, enemyTexture, NULL, &rect);
-        //SDL_RenderFillRect(renderer, &rect);
+        SDL_Rect ene = { enemy.x, enemy.y, enemy.width, enemy.height };
+        SDL_RenderCopy(renderer, enemyTexture, NULL, &ene);
     }
 }
 void spawnEnemy(int currentWave) {
-    const int SAFE_ZONE_RADIUS = 200;
+    const int SAFE_ZONE_RADIUS = 350;
     bool tooClose;
-
+    //respawn the enemy until it is far from the player (atleast 350 pixel)
     do {
         enemy.x = rand() % SCREEN_WIDTH;  
         enemy.y = rand() % SCREEN_HEIGHT;  
@@ -62,36 +60,38 @@ void spawnBoss(int currentWave){
 
 void spawnWaves(SDL_Renderer *renderer, int &currentWave, int maxWaves, bool &waveActive, Uint32 &lastWaveTime, int &enemiesSpawned, Uint32 &lastEnemySpawnTime) {
     bool bossActive = false;
-    if (currentWave >= maxWaves){
-        bossActive = false;
-        gameState = WON;
-        return;
-    }
+
 
     Uint32 currentTime = SDL_GetTicks();
     
-    int Time_interval=1000;
-    if (enemies.empty() && !waveActive && (currentTime - lastWaveTime >= 5000)) {
+    int Time_interval=1000; //time between enemy spawn (spawn rate)
+    if (enemies.empty() && !waveActive && (currentTime - lastWaveTime >= 3000)) { // previous wave = done 5s ago + no enemies left
         checkWave = false;
         currentWave++;
         waveActive = true;
         lastWaveTime = currentTime;
         enemiesSpawned = 0;
-        Time_interval-=50;
+        Time_interval-=75; // -0.075s enemy spawn rate per wave
         if (currentWave == 6) bossActive = false;
         if ((currentWave == 5 || currentWave == 10) && bossActive == false){
-            //spawn boss moi 5 waves
+            //spawn boss every 5 waves
             bossActive = true;
             spawnBoss(currentWave);
         }
-        cout << "Wave " << currentWave << " started with " << 3*pow(currentWave,2) << " enemies!" << endl;
+        cout << "Wave " << currentWave << " started with " << 2*pow(currentWave,2) << " enemies!" << endl;
     }
-    int totalEnemies = 3*pow(currentWave,2);
+    int totalEnemies = 2*pow(currentWave,2);
     if (waveActive && enemiesSpawned < totalEnemies && (currentTime - lastEnemySpawnTime >= Time_interval)){
-        spawnEnemy(currentWave);
-        enemiesSpawned+=1;
-        lastEnemySpawnTime=currentTime;
-        //renderText(renderer, font50, ("Enemies Left: "+ to_string(enemiesSpawned) + "/" + to_string((int)(3*pow(currentWave,2)))).c_str(), 800, 800, 800, 800, white);
+        if (currentWave >= 6){
+            spawnEnemy(currentWave); spawnEnemy(currentWave);
+            enemiesSpawned += 2;
+            lastEnemySpawnTime = currentTime;
+        }
+        else{
+            spawnEnemy(currentWave);
+            enemiesSpawned+=1;
+            lastEnemySpawnTime=currentTime;
+        }
     }
 
     if (enemiesSpawned >= totalEnemies && !enemies.empty()) {
@@ -99,6 +99,10 @@ void spawnWaves(SDL_Renderer *renderer, int &currentWave, int maxWaves, bool &wa
         waveActive = false;
     }
     else if (enemiesSpawned >= totalEnemies && enemies.empty()){
-        checkWave = true;
+        checkWave = true; // check to render text (current waves or enemies left that wave) in gameloop game.cpp
+        if (currentWave == 10) {
+            gameState = WON;
+            bossActive = false;
+        }
     }
 }
