@@ -5,10 +5,10 @@ Lớp Môn học: INT 2215 - 3
 - Link github: <https://github.com/Syrex310/Miku_saves_the_world>
 - Youtube: <https://youtu.be/n1KNwVAwH04?si=_HrzXmK6PahClzYO>
 - Game tham khảo: <https://store.steampowered.com/app/2420510/HoloCure__Save_the_Fans/>
-1. Các tính năng cải tiến trong game
+2. Các tính năng cải tiến trong game
 - Thêm menu nâng cấp nhân vật: health, attack, speed, fire rate, crir rate.
 - Tăng độ khó sau từng wave(max là 10 waves) ở health và speed của enemy, tại wave 5 và 10 sẽ có boss(width và height to hơn, speed chậm hơn, health \*= 50\*wave)
-1. Cấu trúc của project game: Tổ chức lớp, Miêu tả luồng, …
+3. Cấu trúc của project game: Tổ chức lớp, Miêu tả luồng, …
 - Tổ chức lớp gồm: Player, Enemy, Bullet
   - Player: tọa độ(x, y); width(chiều rộng), height(chiều cao), speed(tốc độ chạy), health(máu hiện tại), maxhealth(máu tối đa), lastDamageTime(thời gian vừa bị mất máu)(giúp tính khoảng cách giữa những lần mất máu / frame).
   - Enemy: tọa độ(x,y); width(chiều rộng), height(chiều cao), speed(tốc độ chạy), health(máu hiện tại), hàm void *moveTowardPlayer*: di chuyển về phía player.
@@ -33,7 +33,7 @@ Lớp Môn học: INT 2215 - 3
   - Save.cpp: Nâng cấp nhân vật, đọc và ghi save file *save.txt*
   - Enemy.cpp: Quản lý enemy + di chuyển + wave spawn và boss
   - Collision.cpp: Quản lý va chạm và xóa bỏ bullet/enemy khi hit/chết
-1. Nguồn tham khảo và lấy dữ liệu: âm thanh, đồ họa, chatgpt, 
+4. Nguồn tham khảo và lấy dữ liệu: âm thanh, đồ họa, chatgpt, 
 - Hình ảnh như: menu, menu upgrade, menu pause, nhân vật, súng, ingame,… là tự vẽ(có file .kra chứng minh)
 - Âm thanh:
   - AudioCoffee Band - Pure Inspiration. Source: Free Music Archive.
@@ -44,7 +44,7 @@ Lớp Môn học: INT 2215 - 3
 - Chatgpt: Nhờ fix lỗi, tìm thông tin hàm, optimize code.
 - SDL2 documentation: thông tin về SDL mixer, ttf, image.
 - Stack Overflow: Một số cách xây dựng code.
-1. Các thông tin khác
+5. Các thông tin khác
 - Hướng dẫn chơi:
   - Di chuyển: W A S D
   - Bắn: Giữ chuột trái
